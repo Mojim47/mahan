@@ -2,11 +2,35 @@
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "orders",
+    foreignKeys = [
+        ForeignKey(
+            entity = Driver::class,
+            parentColumns = ["name"],
+            childColumns = ["driver"],
+            onUpdate = ForeignKey.NO_ACTION,
+            onDelete = ForeignKey.NO_ACTION
+        ),
+        ForeignKey(
+            entity = Customer::class,
+            parentColumns = ["name"],
+            childColumns = ["customer"],
+            onUpdate = ForeignKey.NO_ACTION,
+            onDelete = ForeignKey.NO_ACTION
+        ),
+        ForeignKey(
+            entity = Neighborhood::class,
+            parentColumns = ["name"],
+            childColumns = ["neighborhood"],
+            onUpdate = ForeignKey.NO_ACTION,
+            onDelete = ForeignKey.NO_ACTION
+        )
+    ],
     indices = [
         Index(value = ["driver"]),
         Index(value = ["date_time"]),

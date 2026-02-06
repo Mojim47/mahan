@@ -2,9 +2,21 @@
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "payments")
+@Entity(
+    tableName = "payments",
+    foreignKeys = [
+        ForeignKey(
+            entity = Driver::class,
+            parentColumns = ["name"],
+            childColumns = ["driver"],
+            onUpdate = ForeignKey.NO_ACTION,
+            onDelete = ForeignKey.NO_ACTION
+        )
+    ]
+)
 data class Payment(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
