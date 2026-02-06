@@ -1,0 +1,10 @@
+#Wed Jan 07 20:37:03 IRST 2026
+base.2=D\:\\DeliveryTracker\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\3\\classes.dex
+path.2=3/classes.dex
+base.1=D\:\\DeliveryTracker\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+path.1=0/classes.dex
+base.0=D\:\\DeliveryTracker\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+path.0=classes.dex

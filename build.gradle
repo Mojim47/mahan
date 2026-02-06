@@ -1,0 +1,8 @@
+// build.gradle (root project)
+plugins {
+    // هیچ چیزی اینجا نیست، همه پلاگین‌ها از settings.gradle می‌آیند
+}
+
+allprojects {
+    // هیچ repository ای اینجا نباشه
+}

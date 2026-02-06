@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/md_theme_surface">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settle_title"
+                android:textSize="20sp"
+                android:textColor="@color/md_theme_primary"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                android:hint="@string/hint_driver">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/actDriver"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLoad"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/btn_load"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/md_theme_primary_container">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settle_total_placeholder"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/md_theme_on_primary_container"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvCommission"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settle_commission_placeholder"
+                android:textSize="14sp"
+                android:textColor="@color/md_theme_on_primary_container"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvNet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settle_net_placeholder"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/md_theme_primary"
+                android:layout_marginBottom="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/md_theme_outline_variant"
+                android:layout_marginVertical="8dp" />
+
+            <TextView
+                android:id="@+id/tvPaid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settle_paid_placeholder"
+                android:textSize="14sp"
+                android:textColor="@color/md_theme_on_primary_container"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settle_balance_placeholder"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/md_theme_error" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPayment"
+        style="@style/Widget.Material3.Button.FilledTonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/payment_title"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="12dp" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerSettle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:shimmer_auto_start="false"
+        app:shimmer_duration="900">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/shimmer_placeholder" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/shimmer_placeholder" />
+
+        </LinearLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvOrders"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp" />
+
+</LinearLayout>

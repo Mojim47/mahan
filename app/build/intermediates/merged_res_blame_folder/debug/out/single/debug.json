@@ -1,0 +1,98 @@
+[
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\drawable_status_badge.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\drawable\\status_badge.xml"
+    },
+    {
+        "merged": "moji.deliverytracker.app-merged_res-33:/layout_activity_main.xml.flat",
+        "source": "moji.deliverytracker.app-main-35:/layout/activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_settle.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_settle.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_add_driver.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_add_driver.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_item_customer.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\item_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_reports.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_reports.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_add_customer.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_add_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_item_payment.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\item_payment.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_customers_list.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_customers_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_edit_order.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_edit_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\mipmap-hdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\mipmap-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\drawable\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_drivers_list.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_drivers_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_payments.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_payments.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_home.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_item_driver.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\item_driver.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_orders.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_orders.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_item_order.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\item_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_activity_manage.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\activity_manage.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\drawable_card_background.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\drawable\\card_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-merged_res-33:\\layout_dialog_payment.xml.flat",
+        "source": "C:\\Users\\mojig\\.gradle\\daemon\\8.5\\moji.deliverytracker.app-main-35:\\layout\\dialog_payment.xml"
+    }
+]
