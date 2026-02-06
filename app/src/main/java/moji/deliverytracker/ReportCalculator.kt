@@ -43,11 +43,11 @@ object ReportCalculator {
     }
 
     fun calculateSummary(orders: List<Order>, drivers: List<Driver>): ReportSummary {
-        val commissionByDriver = drivers.associate { it.name to it.commission }
+        val commissionByDriver = drivers.associate { it.id to it.commission }
         var totalCommission = 0
 
         orders.forEach { order ->
-            val commission = commissionByDriver[order.driver] ?: 0f
+            val commission = commissionByDriver[order.driverId] ?: 0f
             totalCommission += MoneyCalculator.commissionAmount(order.amount, commission)
         }
 

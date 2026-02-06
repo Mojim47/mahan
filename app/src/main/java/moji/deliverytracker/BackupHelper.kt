@@ -17,12 +17,12 @@ object BackupHelper {
                 val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "MahanBackup")
                 if (!dir.exists()) dir.mkdirs()
 
-                val orders = db.orderDao().getAllOnce()
+                val orders = db.orderDao().getAllWithNamesOnce()
                 val file = File(dir, "orders_$timestamp.csv")
                 FileWriter(file).use { writer ->
                     writer.append("ID,Customer,Driver,Neighborhood,Amount,Description,DateTime,Settled\n")
                     orders.forEach { order ->
-                        writer.append("${order.id},${order.customer},${order.driver},${order.neighborhood},${order.amount},${order.description},${order.dateTime},${order.settled}\n")
+                        writer.append("${order.id},${order.customerName},${order.driverName},${order.neighborhoodName},${order.amount},${order.description},${order.dateTime},${order.settled}\n")
                     }
                 }
                 Pair(true, file.absolutePath)

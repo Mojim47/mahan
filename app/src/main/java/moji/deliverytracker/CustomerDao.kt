@@ -30,6 +30,9 @@ interface CustomerDao {
     @Query("SELECT name FROM customers ORDER BY name ASC")
     suspend fun getNamesOnce(): List<String>
 
+    @Query("SELECT id FROM customers WHERE name = :name LIMIT 1")
+    suspend fun getIdByName(name: String): Int?
+
     @Query("SELECT * FROM customers WHERE id = :id LIMIT 1")
     suspend fun getById(id: Int): Customer?
 

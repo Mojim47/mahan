@@ -30,11 +30,14 @@ interface DriverDao {
     @Query("SELECT name FROM drivers ORDER BY name ASC")
     suspend fun getNamesOnce(): List<String>
 
-    @Query("SELECT commission FROM drivers WHERE name = :name LIMIT 1")
-    suspend fun getCommissionByName(name: String): Float?
+    @Query("SELECT commission FROM drivers WHERE id = :id LIMIT 1")
+    suspend fun getCommissionById(id: Int): Float?
 
-    @Query("SELECT commission FROM drivers WHERE name = :name LIMIT 1")
-    fun getCommissionFlow(name: String): Flow<Float?>
+    @Query("SELECT commission FROM drivers WHERE id = :id LIMIT 1")
+    fun getCommissionFlow(id: Int): Flow<Float?>
+
+    @Query("SELECT id FROM drivers WHERE name = :name LIMIT 1")
+    suspend fun getIdByName(name: String): Int?
 
     @Query("SELECT * FROM drivers WHERE id = :id LIMIT 1")
     suspend fun getById(id: Int): Driver?

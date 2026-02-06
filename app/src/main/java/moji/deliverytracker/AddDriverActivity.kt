@@ -89,7 +89,7 @@ class AddDriverActivity : AppCompatActivity() {
                             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                             db.commissionHistoryDao().insert(
                                 CommissionHistory(
-                                    driver = name,
+                                    driverId = existing.id,
                                     oldCommission = existing.commission,
                                     newCommission = commission,
                                     dateTime = sdf.format(Date())

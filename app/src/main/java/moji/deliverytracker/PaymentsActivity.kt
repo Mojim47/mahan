@@ -42,7 +42,7 @@ class PaymentsActivity : AppCompatActivity() {
     private fun observePayments() {
         shimmer.startShimmer()
         lifecycleScope.launch {
-            db.paymentDao().getAllFlow().collectLatest { payments ->
+            db.paymentDao().getAllWithDriverFlow().collectLatest { payments ->
                 if (firstLoad) {
                     firstLoad = false
                     shimmer.stopShimmer()

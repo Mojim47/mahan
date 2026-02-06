@@ -15,9 +15,9 @@ class ReportCalculatorTest {
         )
 
         val orders = listOf(
-            Order(1, "C1", "Ali", "N1", 100, "", "2026-02-06 10:00:00", true),
-            Order(2, "C2", "Sara", "N1", 200, "", "2026-02-06 11:00:00", false),
-            Order(3, "C3", "Sara", "N2", 50, "", "2026-02-05 09:00:00", true)
+            Order(1, 1, 1, 1, 100, "", "2026-02-06 10:00:00", true),
+            Order(2, 2, 2, 1, 200, "", "2026-02-06 11:00:00", false),
+            Order(3, 3, 2, 2, 50, "", "2026-02-05 09:00:00", true)
         )
 
         val summary = ReportCalculator.calculateSummary(orders, drivers)
@@ -39,10 +39,10 @@ class ReportCalculatorTest {
         }
 
         val orders = listOf(
-            Order(1, "C1", "Ali", "N1", 100, "", sdf.format(Date(now.timeInMillis)), true),
-            Order(2, "C2", "Ali", "N1", 100, "", sdf.format(Date(now.timeInMillis - 3L * 24 * 60 * 60 * 1000)), true),
-            Order(3, "C3", "Ali", "N1", 100, "", sdf.format(Date(now.timeInMillis - 10L * 24 * 60 * 60 * 1000)), true),
-            Order(4, "C4", "Ali", "N1", 100, "", sdf.format(Date(now.timeInMillis - 40L * 24 * 60 * 60 * 1000)), true)
+            Order(1, 1, 1, 1, 100, "", sdf.format(Date(now.timeInMillis)), true),
+            Order(2, 2, 1, 1, 100, "", sdf.format(Date(now.timeInMillis - 3L * 24 * 60 * 60 * 1000)), true),
+            Order(3, 3, 1, 1, 100, "", sdf.format(Date(now.timeInMillis - 10L * 24 * 60 * 60 * 1000)), true),
+            Order(4, 4, 1, 1, 100, "", sdf.format(Date(now.timeInMillis - 40L * 24 * 60 * 60 * 1000)), true)
         )
 
         assertEquals(1, ReportCalculator.filterOrders(orders, ReportPeriod.TODAY, now).size)

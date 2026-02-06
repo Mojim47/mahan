@@ -34,7 +34,7 @@ class SettleActivity : AppCompatActivity() {
     private lateinit var adapter: OrderAdapter
     private lateinit var prefs: SharedPreferences
     private lateinit var shimmer: ShimmerFrameLayout
-    private var currentDriver: String = ""
+    private var currentDriverId: Int = -1
     private var driverJob: Job? = null
     private var hasPromptedSettle = false
     private var driverFirstLoad = true
@@ -84,22 +84,29 @@ class SettleActivity : AppCompatActivity() {
         }
 
         btnLoad.setOnClickListener {
-            val driver = actDriver.text.toString().trim()
-            if (driver.isEmpty()) {
+            val driverName = actDriver.text.toString().trim()
+            if (driverName.isEmpty()) {
                 Toast.makeText(this, getString(R.string.select_driver), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            currentDriver = driver
-            hasPromptedSettle = false
-            driverFirstLoad = true
-            shimmer.visibility = View.VISIBLE
-            shimmer.startShimmer()
-            rvOrders.visibility = View.GONE
-            observeDriver(driver)
+            lifecycleScope.launch {
+                val driverId = db.driverDao().getIdByName(driverName)
+                if (driverId == null) {
+                    Toast.makeText(this@SettleActivity, getString(R.string.select_driver), Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+                currentDriverId = driverId
+                hasPromptedSettle = false
+                driverFirstLoad = true
+                shimmer.visibility = View.VISIBLE
+                shimmer.startShimmer()
+                rvOrders.visibility = View.GONE
+                observeDriver(driverId, driverName)
+            }
         }
 
         btnPayment.setOnClickListener {
-            if (currentDriver.isEmpty()) {
+            if (currentDriverId == -1) {
                 Toast.makeText(this, getString(R.string.load_driver_first), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -107,12 +114,12 @@ class SettleActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeDriver(driver: String) {
+    private fun observeDriver(driverId: Int, driverName: String) {
         driverJob?.cancel()
         driverJob = lifecycleScope.launch {
-            val ordersFlow = db.orderDao().getByDriverFlow(driver)
-            val paidFlow = db.paymentDao().getTotalPaidFlow(driver)
-            val commissionFlow = db.driverDao().getCommissionFlow(driver)
+            val ordersFlow = db.orderDao().getByDriverWithNamesFlow(driverId)
+            val paidFlow = db.paymentDao().getTotalPaidFlow(driverId)
+            val commissionFlow = db.driverDao().getCommissionFlow(driverId)
 
             combine(ordersFlow, paidFlow, commissionFlow) { orders, totalPaid, commissionValue ->
                 Triple(orders, totalPaid, commissionValue ?: 0f)
@@ -139,7 +146,7 @@ class SettleActivity : AppCompatActivity() {
 
                 if (!hasPromptedSettle && orders.isNotEmpty() && balance > 0) {
                     hasPromptedSettle = true
-                    showSettleDialog(driver, balance)
+                    showSettleDialog(driverName, balance)
                 }
             }
         }
@@ -167,7 +174,7 @@ class SettleActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                     val payment = Payment(
-                        driver = currentDriver,
+                        driverId = currentDriverId,
                         amount = amount,
                         method = method,
                         dateTime = sdf.format(Date())
@@ -194,7 +201,7 @@ class SettleActivity : AppCompatActivity() {
                     .setMessage(getString(R.string.settle_final_message))
                     .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
                         lifecycleScope.launch {
-                            val success = db.orderDao().updateSettledForDriver(driver, true) > 0
+                            val success = db.orderDao().updateSettledForDriver(currentDriverId, true) > 0
                             if (success) {
                                 Toast.makeText(this@SettleActivity, getString(R.string.settle_success), Toast.LENGTH_SHORT).show()
                             } else {

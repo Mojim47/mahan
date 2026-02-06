@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class PaymentAdapter(private val payments: MutableList<Payment>) : RecyclerView.Adapter<PaymentAdapter.ViewHolder>() {
+class PaymentAdapter(private val payments: MutableList<PaymentWithDriverName>) : RecyclerView.Adapter<PaymentAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvDriver: TextView = view.findViewById(R.id.tvPaymentDriver)
@@ -15,7 +15,7 @@ class PaymentAdapter(private val payments: MutableList<Payment>) : RecyclerView.
         val tvDate: TextView = view.findViewById(R.id.tvPaymentDate)
     }
 
-    fun updateList(newItems: List<Payment>) {
+    fun updateList(newItems: List<PaymentWithDriverName>) {
         payments.clear()
         payments.addAll(newItems)
         notifyDataSetChanged()
@@ -28,7 +28,7 @@ class PaymentAdapter(private val payments: MutableList<Payment>) : RecyclerView.
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val payment = payments[position]
-        holder.tvDriver.text = payment.driver
+        holder.tvDriver.text = payment.driverName
         holder.tvAmount.text = CurrencyFormatter.formatToman(payment.amount, holder.itemView.context.getString(R.string.toman))
         holder.tvMethod.text = payment.method
         holder.tvDate.text = payment.dateTime

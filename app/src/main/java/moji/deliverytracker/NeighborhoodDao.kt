@@ -20,6 +20,9 @@ interface NeighborhoodDao {
     @Query("SELECT name FROM neighborhoods ORDER BY name ASC")
     suspend fun getNamesOnce(): List<String>
 
+    @Query("SELECT id FROM neighborhoods WHERE name = :name LIMIT 1")
+    suspend fun getIdByName(name: String): Int?
+
     @Query("SELECT COUNT(*) FROM neighborhoods")
     fun getCountFlow(): Flow<Int>
 }

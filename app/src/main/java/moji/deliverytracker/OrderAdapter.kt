@@ -9,12 +9,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class OrderAdapter(
-    private var orders: MutableList<Order>,
+    private var orders: MutableList<OrderWithNames>,
     private val context: Context,
-    private val onItemClick: (Order) -> Unit
+    private val onItemClick: (OrderWithNames) -> Unit
 ) : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
-    fun updateList(newList: MutableList<Order>) {
+    fun updateList(newList: MutableList<OrderWithNames>) {
         orders.clear()
         orders.addAll(newList)
         notifyDataSetChanged()
@@ -44,9 +44,9 @@ class OrderAdapter(
         private val tvDateTime = itemView.findViewById<TextView>(R.id.tvDateTime)
         private val tvStatus = itemView.findViewById<TextView>(R.id.tvStatus)
 
-        fun bind(order: Order) {
-            tvCustomer.text = order.customer
-            tvDriver.text = order.driver
+        fun bind(order: OrderWithNames) {
+            tvCustomer.text = order.customerName
+            tvDriver.text = order.driverName
             tvAmount.text = CurrencyFormatter.formatToman(order.amount, context.getString(R.string.toman))
             tvDateTime.text = order.dateTime
 

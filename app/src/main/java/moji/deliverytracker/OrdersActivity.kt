@@ -27,7 +27,7 @@ class OrdersActivity : AppCompatActivity() {
     private lateinit var btnFilterUnsettled: MaterialButton
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var adapter: OrderAdapter
-    private var allOrders = listOf<Order>()
+    private var allOrders = listOf<OrderWithNames>()
     private var currentFilter = "all"
     private var filterDriver: String? = null
     private var filterCustomer: String? = null
@@ -98,7 +98,7 @@ class OrdersActivity : AppCompatActivity() {
     private fun observeOrders() {
         shimmer.startShimmer()
         lifecycleScope.launch {
-            db.orderDao().getAllFlow().collectLatest { orders ->
+            db.orderDao().getAllWithNamesFlow().collectLatest { orders ->
                 if (firstLoad) {
                     firstLoad = false
                     shimmer.stopShimmer()
@@ -121,18 +121,18 @@ class OrdersActivity : AppCompatActivity() {
 
         if (searchText.isNotEmpty()) {
             filtered = filtered.filter {
-                it.customer.lowercase().contains(searchText) ||
-                    it.driver.lowercase().contains(searchText) ||
-                    it.neighborhood.lowercase().contains(searchText)
+                it.customerName.lowercase().contains(searchText) ||
+                    it.driverName.lowercase().contains(searchText) ||
+                    it.neighborhoodName.lowercase().contains(searchText)
             }
         }
 
         if (filterDriver != null) {
-            filtered = filtered.filter { it.driver == filterDriver }
+            filtered = filtered.filter { it.driverName == filterDriver }
         }
 
         if (filterCustomer != null) {
-            filtered = filtered.filter { it.customer == filterCustomer }
+            filtered = filtered.filter { it.customerName == filterCustomer }
         }
 
         adapter.updateList(filtered.toMutableList())

@@ -11,28 +11,30 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = Driver::class,
-            parentColumns = ["name"],
-            childColumns = ["driver"],
+            parentColumns = ["id"],
+            childColumns = ["driver_id"],
             onUpdate = ForeignKey.NO_ACTION,
             onDelete = ForeignKey.NO_ACTION
         ),
         ForeignKey(
             entity = Customer::class,
-            parentColumns = ["name"],
-            childColumns = ["customer"],
+            parentColumns = ["id"],
+            childColumns = ["customer_id"],
             onUpdate = ForeignKey.NO_ACTION,
             onDelete = ForeignKey.NO_ACTION
         ),
         ForeignKey(
             entity = Neighborhood::class,
-            parentColumns = ["name"],
-            childColumns = ["neighborhood"],
+            parentColumns = ["id"],
+            childColumns = ["neighborhood_id"],
             onUpdate = ForeignKey.NO_ACTION,
             onDelete = ForeignKey.NO_ACTION
         )
     ],
     indices = [
-        Index(value = ["driver"]),
+        Index(value = ["driver_id"]),
+        Index(value = ["customer_id"]),
+        Index(value = ["neighborhood_id"]),
         Index(value = ["date_time"]),
         Index(value = ["settled"])
     ]
@@ -40,9 +42,12 @@ import androidx.room.PrimaryKey
 data class Order(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val customer: String,
-    val driver: String,
-    val neighborhood: String,
+    @ColumnInfo(name = "customer_id")
+    val customerId: Int,
+    @ColumnInfo(name = "driver_id")
+    val driverId: Int,
+    @ColumnInfo(name = "neighborhood_id")
+    val neighborhoodId: Int,
     val amount: Int,
     val description: String,
     @ColumnInfo(name = "date_time")

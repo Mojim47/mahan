@@ -10,8 +10,8 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = Driver::class,
-            parentColumns = ["name"],
-            childColumns = ["driver"],
+            parentColumns = ["id"],
+            childColumns = ["driver_id"],
             onUpdate = ForeignKey.NO_ACTION,
             onDelete = ForeignKey.NO_ACTION
         )
@@ -20,7 +20,8 @@ import androidx.room.PrimaryKey
 data class CommissionHistory(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val driver: String,
+    @ColumnInfo(name = "driver_id")
+    val driverId: Int,
     @ColumnInfo(name = "old_commission")
     val oldCommission: Float,
     @ColumnInfo(name = "new_commission")

@@ -14,7 +14,7 @@ class EditOrderActivity : AppCompatActivity() {
 
     private lateinit var db: AppDatabase
     private var orderId: Int = -1
-    private var currentOrder: Order? = null
+    private var currentOrder: OrderWithNames? = null
 
     private lateinit var etCustomer: AutoCompleteTextView
     private lateinit var etDriver: AutoCompleteTextView
@@ -97,14 +97,34 @@ class EditOrderActivity : AppCompatActivity() {
                     Toast.makeText(this@EditOrderActivity, getString(R.string.order_update_error), Toast.LENGTH_SHORT).show()
                     return@launch
                 }
+                val customerId = db.customerDao().getIdByName(customer)
+                val driverId = db.driverDao().getIdByName(driver)
+                val neighborhoodId = db.neighborhoodDao().getIdByName(neighborhood)
+
+                if (customerId == null || driverId == null || neighborhoodId == null) {
+                    btnSave.isEnabled = true
+                    Toast.makeText(this@EditOrderActivity, getString(R.string.order_update_error), Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
                 val updated = existing.copy(
-                    customer = customer,
-                    driver = driver,
-                    neighborhood = neighborhood,
+                    customerId = customerId,
+                    driverId = driverId,
+                    neighborhoodId = neighborhoodId,
                     amount = amount,
                     description = description
                 )
-                val success = db.orderDao().update(updated) > 0
+                val order = Order(
+                    id = updated.id,
+                    customerId = updated.customerId,
+                    driverId = updated.driverId,
+                    neighborhoodId = updated.neighborhoodId,
+                    amount = updated.amount,
+                    description = updated.description,
+                    dateTime = updated.dateTime,
+                    settled = updated.settled,
+                    status = updated.status
+                )
+                val success = db.orderDao().update(order) > 0
                 btnSave.isEnabled = true
                 if (success) {
                     Toast.makeText(this@EditOrderActivity, getString(R.string.order_updated), Toast.LENGTH_SHORT).show()
@@ -137,11 +157,11 @@ class EditOrderActivity : AppCompatActivity() {
 
     private fun loadOrderData() {
         lifecycleScope.launch {
-            currentOrder = db.orderDao().getById(orderId)
+            currentOrder = db.orderDao().getByIdWithNames(orderId)
             currentOrder?.let { order ->
-                etCustomer.setText(order.customer)
-                etDriver.setText(order.driver)
-                etNeighborhood.setText(order.neighborhood)
+                etCustomer.setText(order.customerName)
+                etDriver.setText(order.driverName)
+                etNeighborhood.setText(order.neighborhoodName)
                 etAmount.setText(order.amount.toString())
                 etDescription.setText(order.description)
             } ?: run {

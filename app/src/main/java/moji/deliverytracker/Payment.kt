@@ -10,8 +10,8 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = Driver::class,
-            parentColumns = ["name"],
-            childColumns = ["driver"],
+            parentColumns = ["id"],
+            childColumns = ["driver_id"],
             onUpdate = ForeignKey.NO_ACTION,
             onDelete = ForeignKey.NO_ACTION
         )
@@ -20,7 +20,8 @@ import androidx.room.PrimaryKey
 data class Payment(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val driver: String,
+    @ColumnInfo(name = "driver_id")
+    val driverId: Int,
     val amount: Int,
     @ColumnInfo(name = "payment_method")
     val method: String,

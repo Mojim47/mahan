@@ -87,16 +87,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun submitOrder() {
-        val customer = etCustomer.text.toString().trim()
-        val driver = etDriver.text.toString().trim()
-        val neighborhood = etNeighborhood.text.toString().trim()
+        val customerName = etCustomer.text.toString().trim()
+        val driverName = etDriver.text.toString().trim()
+        val neighborhoodName = etNeighborhood.text.toString().trim()
         val amountText = etAmount.text.toString().trim()
         val description = etDescription.text.toString().trim()
 
         val errors = mutableListOf<String>()
-        if (customer.isEmpty()) errors.add(getString(R.string.error_customer_required))
-        if (driver.isEmpty()) errors.add(getString(R.string.error_driver_required))
-        if (neighborhood.isEmpty()) errors.add(getString(R.string.error_neighborhood_required))
+        if (customerName.isEmpty()) errors.add(getString(R.string.error_customer_required))
+        if (driverName.isEmpty()) errors.add(getString(R.string.error_driver_required))
+        if (neighborhoodName.isEmpty()) errors.add(getString(R.string.error_neighborhood_required))
         if (amountText.isEmpty()) errors.add(getString(R.string.error_amount_required))
 
         val amount = amountText.toIntOrNull()
@@ -110,11 +110,21 @@ class MainActivity : AppCompatActivity() {
 
         btnSubmit.isEnabled = false
         lifecycleScope.launch {
+            val customerId = db.customerDao().getIdByName(customerName)
+            val driverId = db.driverDao().getIdByName(driverName)
+            val neighborhoodId = db.neighborhoodDao().getIdByName(neighborhoodName)
+
+            if (customerId == null || driverId == null || neighborhoodId == null) {
+                btnSubmit.isEnabled = true
+                Toast.makeText(this@MainActivity, getString(R.string.order_saved_error), Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
             val now = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
             val order = Order(
-                customer = customer,
-                driver = driver,
-                neighborhood = neighborhood,
+                customerId = customerId,
+                driverId = driverId,
+                neighborhoodId = neighborhoodId,
                 amount = amount!!,
                 description = description,
                 dateTime = selectedDate ?: now,
@@ -123,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             val result = db.orderDao().insert(order)
             btnSubmit.isEnabled = true
             if (result != -1L) {
-                NotificationHelper.showOrderNotification(this@MainActivity, getString(R.string.order_new_title), getString(R.string.order_new_message, customer))
+                NotificationHelper.showOrderNotification(this@MainActivity, getString(R.string.order_new_title), getString(R.string.order_new_message, customerName))
                 Toast.makeText(this@MainActivity, getString(R.string.order_saved_success), Toast.LENGTH_SHORT).show()
                 clearForm()
             } else {
