@@ -53,5 +53,7 @@ data class Order(
     @ColumnInfo(name = "date_time")
     val dateTime: String,
     val settled: Boolean,
+    @ColumnInfo(name = "settled_at")
+    val settledAt: String? = null,
     val status: String = "pending"
 )

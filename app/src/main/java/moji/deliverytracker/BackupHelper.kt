@@ -22,7 +22,19 @@ object BackupHelper {
                 FileWriter(file).use { writer ->
                     writer.append("ID,Customer,Driver,Neighborhood,Amount,Description,DateTime,Settled\n")
                     orders.forEach { order ->
-                        writer.append("${order.id},${order.customerName},${order.driverName},${order.neighborhoodName},${order.amount},${order.description},${order.dateTime},${order.settled}\n")
+                        writer.append(
+                            listOf(
+                                order.id.toString(),
+                                csv(order.customerName),
+                                csv(order.driverName),
+                                csv(order.neighborhoodName),
+                                order.amount.toString(),
+                                csv(order.description),
+                                csv(order.dateTime),
+                                order.settled.toString()
+                            ).joinToString(",")
+                        )
+                        writer.append("\n")
                     }
                 }
                 Pair(true, file.absolutePath)
@@ -30,5 +42,10 @@ object BackupHelper {
                 Pair(false, e.message ?: context.getString(R.string.backup_save_error))
             }
         }
+    }
+
+    private fun csv(value: String): String {
+        val escaped = value.replace("\"", "\"\"")
+        return "\"$escaped\""
     }
 }

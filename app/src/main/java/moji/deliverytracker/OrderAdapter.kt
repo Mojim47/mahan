@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class OrderAdapter(
@@ -52,10 +53,16 @@ class OrderAdapter(
 
             if (order.settled) {
                 tvStatus.text = context.getString(R.string.orders_status_settled)
-                tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.md_theme_primary))
+                ViewCompat.setBackgroundTintList(
+                    tvStatus,
+                    ContextCompat.getColorStateList(context, R.color.color_success)
+                )
             } else {
                 tvStatus.text = context.getString(R.string.orders_status_unsettled)
-                tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.md_theme_error))
+                ViewCompat.setBackgroundTintList(
+                    tvStatus,
+                    ContextCompat.getColorStateList(context, R.color.md_theme_error)
+                )
             }
         }
     }

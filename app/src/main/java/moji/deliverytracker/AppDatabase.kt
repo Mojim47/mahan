@@ -16,7 +16,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         Payment::class,
         CommissionHistory::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -135,6 +135,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE orders ADD COLUMN settled_at TEXT")
+                db.execSQL("CREATE INDEX IF NOT EXISTS idx_orders_settled_at ON orders(settled_at)")
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -142,7 +149,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "DeliveryDB"
                 )
-                    .addMigrations(MIGRATION_5_6)
+                    .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
                     .build().also { INSTANCE = it }
             }
         }

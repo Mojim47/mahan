@@ -122,6 +122,7 @@ class EditOrderActivity : AppCompatActivity() {
                     description = updated.description,
                     dateTime = updated.dateTime,
                     settled = updated.settled,
+                    settledAt = updated.settledAt,
                     status = updated.status
                 )
                 val success = db.orderDao().update(order) > 0

@@ -9,6 +9,7 @@ data class OrderWithNames(
     val description: String,
     val dateTime: String,
     val settled: Boolean,
+    val settledAt: String?,
     val status: String,
     val customerName: String,
     val driverName: String,

@@ -20,12 +20,14 @@ interface OrderDao {
     @Query(
         """
         SELECT o.id, o.customer_id AS customerId, o.driver_id AS driverId, o.neighborhood_id AS neighborhoodId,
-               o.amount, o.description, o.date_time AS dateTime, o.settled, o.status,
-               c.name AS customerName, d.name AS driverName, n.name AS neighborhoodName
+               o.amount, o.description, o.date_time AS dateTime, o.settled, o.settled_at AS settledAt, o.status,
+               COALESCE(c.name, '__UNKNOWN__') AS customerName,
+               COALESCE(d.name, '__UNKNOWN__') AS driverName,
+               COALESCE(n.name, '__UNKNOWN__') AS neighborhoodName
         FROM orders o
-        JOIN customers c ON c.id = o.customer_id
-        JOIN drivers d ON d.id = o.driver_id
-        JOIN neighborhoods n ON n.id = o.neighborhood_id
+        LEFT JOIN customers c ON c.id = o.customer_id
+        LEFT JOIN drivers d ON d.id = o.driver_id
+        LEFT JOIN neighborhoods n ON n.id = o.neighborhood_id
         ORDER BY o.id DESC
         """
     )
@@ -34,12 +36,14 @@ interface OrderDao {
     @Query(
         """
         SELECT o.id, o.customer_id AS customerId, o.driver_id AS driverId, o.neighborhood_id AS neighborhoodId,
-               o.amount, o.description, o.date_time AS dateTime, o.settled, o.status,
-               c.name AS customerName, d.name AS driverName, n.name AS neighborhoodName
+               o.amount, o.description, o.date_time AS dateTime, o.settled, o.settled_at AS settledAt, o.status,
+               COALESCE(c.name, '__UNKNOWN__') AS customerName,
+               COALESCE(d.name, '__UNKNOWN__') AS driverName,
+               COALESCE(n.name, '__UNKNOWN__') AS neighborhoodName
         FROM orders o
-        JOIN customers c ON c.id = o.customer_id
-        JOIN drivers d ON d.id = o.driver_id
-        JOIN neighborhoods n ON n.id = o.neighborhood_id
+        LEFT JOIN customers c ON c.id = o.customer_id
+        LEFT JOIN drivers d ON d.id = o.driver_id
+        LEFT JOIN neighborhoods n ON n.id = o.neighborhood_id
         ORDER BY o.id DESC
         """
     )
@@ -48,12 +52,14 @@ interface OrderDao {
     @Query(
         """
         SELECT o.id, o.customer_id AS customerId, o.driver_id AS driverId, o.neighborhood_id AS neighborhoodId,
-               o.amount, o.description, o.date_time AS dateTime, o.settled, o.status,
-               c.name AS customerName, d.name AS driverName, n.name AS neighborhoodName
+               o.amount, o.description, o.date_time AS dateTime, o.settled, o.settled_at AS settledAt, o.status,
+               COALESCE(c.name, '__UNKNOWN__') AS customerName,
+               COALESCE(d.name, '__UNKNOWN__') AS driverName,
+               COALESCE(n.name, '__UNKNOWN__') AS neighborhoodName
         FROM orders o
-        JOIN customers c ON c.id = o.customer_id
-        JOIN drivers d ON d.id = o.driver_id
-        JOIN neighborhoods n ON n.id = o.neighborhood_id
+        LEFT JOIN customers c ON c.id = o.customer_id
+        LEFT JOIN drivers d ON d.id = o.driver_id
+        LEFT JOIN neighborhoods n ON n.id = o.neighborhood_id
         WHERE o.driver_id = :driverId
         ORDER BY o.id DESC
         """
@@ -63,12 +69,31 @@ interface OrderDao {
     @Query(
         """
         SELECT o.id, o.customer_id AS customerId, o.driver_id AS driverId, o.neighborhood_id AS neighborhoodId,
-               o.amount, o.description, o.date_time AS dateTime, o.settled, o.status,
-               c.name AS customerName, d.name AS driverName, n.name AS neighborhoodName
+               o.amount, o.description, o.date_time AS dateTime, o.settled, o.settled_at AS settledAt, o.status,
+               COALESCE(c.name, '__UNKNOWN__') AS customerName,
+               COALESCE(d.name, '__UNKNOWN__') AS driverName,
+               COALESCE(n.name, '__UNKNOWN__') AS neighborhoodName
         FROM orders o
-        JOIN customers c ON c.id = o.customer_id
-        JOIN drivers d ON d.id = o.driver_id
-        JOIN neighborhoods n ON n.id = o.neighborhood_id
+        LEFT JOIN customers c ON c.id = o.customer_id
+        LEFT JOIN drivers d ON d.id = o.driver_id
+        LEFT JOIN neighborhoods n ON n.id = o.neighborhood_id
+        WHERE o.driver_id = :driverId AND o.settled = 0
+        ORDER BY o.id DESC
+        """
+    )
+    fun getUnsettledByDriverWithNamesFlow(driverId: Int): Flow<List<OrderWithNames>>
+
+    @Query(
+        """
+        SELECT o.id, o.customer_id AS customerId, o.driver_id AS driverId, o.neighborhood_id AS neighborhoodId,
+               o.amount, o.description, o.date_time AS dateTime, o.settled, o.settled_at AS settledAt, o.status,
+               COALESCE(c.name, '__UNKNOWN__') AS customerName,
+               COALESCE(d.name, '__UNKNOWN__') AS driverName,
+               COALESCE(n.name, '__UNKNOWN__') AS neighborhoodName
+        FROM orders o
+        LEFT JOIN customers c ON c.id = o.customer_id
+        LEFT JOIN drivers d ON d.id = o.driver_id
+        LEFT JOIN neighborhoods n ON n.id = o.neighborhood_id
         WHERE o.id = :id
         LIMIT 1
         """
@@ -84,8 +109,11 @@ interface OrderDao {
     @Query("SELECT * FROM orders WHERE id = :id LIMIT 1")
     suspend fun getById(id: Int): Order?
 
-    @Query("UPDATE orders SET settled = :settled WHERE driver_id = :driverId")
-    suspend fun updateSettledForDriver(driverId: Int, settled: Boolean): Int
+    @Query("UPDATE orders SET settled = :settled, settled_at = :settledAt WHERE driver_id = :driverId AND settled = 0")
+    suspend fun updateSettledForDriver(driverId: Int, settled: Boolean, settledAt: String): Int
+
+    @Query("SELECT MAX(settled_at) FROM orders WHERE driver_id = :driverId AND settled = 1")
+    fun getLastSettlementTimeFlow(driverId: Int): Flow<String?>
 
     @Query("SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*) AS count FROM orders WHERE date_time LIKE :datePrefix")
     fun getSummaryFlow(datePrefix: String): Flow<OrderSummary>

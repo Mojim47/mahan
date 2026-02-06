@@ -23,20 +23,22 @@ object ReportCalculator {
         val dayFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val orderFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val todayKey = dayFormat.format(now.time)
+        val nowTime = now.timeInMillis
 
         return orders.filter { order ->
             val orderDate = orderFormat.parse(order.dateTime) ?: Date(0)
             val orderCal = Calendar.getInstance().apply { time = orderDate }
+            val orderTime = orderCal.timeInMillis
 
             when (period) {
-                ReportPeriod.TODAY -> dayFormat.format(orderCal.time) == todayKey
+                ReportPeriod.TODAY -> dayFormat.format(orderCal.time) == todayKey && orderTime <= nowTime
                 ReportPeriod.WEEK -> {
                     val weekAgo = Calendar.getInstance().apply { time = now.time; add(Calendar.DAY_OF_YEAR, -7) }
-                    orderCal.after(weekAgo)
+                    orderTime in weekAgo.timeInMillis..nowTime
                 }
                 ReportPeriod.MONTH -> {
                     val monthAgo = Calendar.getInstance().apply { time = now.time; add(Calendar.MONTH, -1) }
-                    orderCal.after(monthAgo)
+                    orderTime in monthAgo.timeInMillis..nowTime
                 }
             }
         }

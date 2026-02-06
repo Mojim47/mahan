@@ -128,7 +128,8 @@ class MainActivity : AppCompatActivity() {
                 amount = amount!!,
                 description = description,
                 dateTime = selectedDate ?: now,
-                settled = false
+                settled = false,
+                settledAt = null
             )
             val result = db.orderDao().insert(order)
             btnSubmit.isEnabled = true

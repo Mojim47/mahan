@@ -86,6 +86,8 @@
     <string name="select_driver">لطفا راننده را انتخاب کنید</string>
     <string name="load_driver_first">ابتدا راننده را بارگذاری کنید</string>
     <string name="invalid_amount">مبلغ نامعتبر است</string>
+    <string name="payment_over_balance">مبلغ پرداختی بیشتر از مانده است</string>
+    <string name="settle_balance_cleared">مانده‌ای برای پرداخت وجود ندارد</string>
 
     <string name="settle_dialog_title">تسویه حساب</string>
     <string name="settle_dialog_message">آیا مطمئن هستید که می‌خواهید تسویه حساب %1$s به مبلغ %2$s تومان را انجام دهید؟\n\nاین عمل غیرقابل بازگشت است.</string>

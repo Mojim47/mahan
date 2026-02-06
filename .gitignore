@@ -1,1 +1,4 @@
 .gradle/
+app/keystore.jks
+app/keystore.properties
+*.jks

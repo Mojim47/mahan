@@ -37,4 +37,10 @@ interface PaymentDao {
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE driver_id = :driverId")
     fun getTotalPaidFlow(driverId: Int): Flow<Int>
+
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE driver_id = :driverId AND date_time >= :since")
+    fun getTotalPaidSinceFlow(driverId: Int, since: String): Flow<Int>
+
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE driver_id = :driverId AND date_time >= :since")
+    suspend fun getTotalPaidSinceOnce(driverId: Int, since: String): Int
 }

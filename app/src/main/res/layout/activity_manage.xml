@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/bg_app_gradient">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAddNeighborhood"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="@string/add_neighborhood_button"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:padding="16dp" />
 
     <com.facebook.shimmer.ShimmerFrameLayout

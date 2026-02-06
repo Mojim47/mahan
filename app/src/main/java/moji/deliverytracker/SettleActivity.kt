@@ -15,9 +15,11 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.content.ContextCompat
 
 class SettleActivity : AppCompatActivity() {
 
@@ -38,6 +40,8 @@ class SettleActivity : AppCompatActivity() {
     private var driverJob: Job? = null
     private var hasPromptedSettle = false
     private var driverFirstLoad = true
+    private var currentBalance: Int = 0
+    private var lastSettlementTime: String = "0000-01-01 00:00:00"
 
     companion object {
         private const val PREF_AUTH = "auth_encrypted"
@@ -117,8 +121,12 @@ class SettleActivity : AppCompatActivity() {
     private fun observeDriver(driverId: Int, driverName: String) {
         driverJob?.cancel()
         driverJob = lifecycleScope.launch {
-            val ordersFlow = db.orderDao().getByDriverWithNamesFlow(driverId)
-            val paidFlow = db.paymentDao().getTotalPaidFlow(driverId)
+            val ordersFlow = db.orderDao().getUnsettledByDriverWithNamesFlow(driverId)
+            val lastSettlementFlow = db.orderDao().getLastSettlementTimeFlow(driverId)
+            val paidFlow = lastSettlementFlow.flatMapLatest { since ->
+                lastSettlementTime = since ?: "0000-01-01 00:00:00"
+                db.paymentDao().getTotalPaidSinceFlow(driverId, lastSettlementTime)
+            }
             val commissionFlow = db.driverDao().getCommissionFlow(driverId)
 
             combine(ordersFlow, paidFlow, commissionFlow) { orders, totalPaid, commissionValue ->
@@ -134,28 +142,41 @@ class SettleActivity : AppCompatActivity() {
                 val total = orders.sumOf { it.amount }
                 val commissionAmount = MoneyCalculator.commissionAmount(total, commission)
                 val netIncome = MoneyCalculator.netIncome(total, commission)
-                val balance = MoneyCalculator.balance(netIncome, totalPaid)
+                val paidEffective = if (total == 0) 0 else totalPaid
+                val balance = MoneyCalculator.balance(netIncome, paidEffective)
+                currentBalance = balance
 
                 tvTotal.text = getString(R.string.settle_total_format, CurrencyFormatter.formatNumber(total.toLong()))
                 tvCommission.text = getString(R.string.settle_commission_format, commission, CurrencyFormatter.formatNumber(commissionAmount.toLong()))
                 tvNet.text = getString(R.string.settle_net_format, CurrencyFormatter.formatNumber(netIncome.toLong()))
-                tvPaid.text = getString(R.string.settle_paid_format, CurrencyFormatter.formatNumber(totalPaid.toLong()))
+                tvPaid.text = getString(R.string.settle_paid_format, CurrencyFormatter.formatNumber(paidEffective.toLong()))
                 tvBalance.text = getString(R.string.settle_balance_format, CurrencyFormatter.formatNumber(balance.toLong()))
+                tvBalance.setTextColor(
+                    ContextCompat.getColor(
+                        this@SettleActivity,
+                        if (balance <= 0) R.color.color_success else R.color.md_theme_error
+                    )
+                )
 
                 adapter.updateList(orders.toMutableList())
 
-                if (!hasPromptedSettle && orders.isNotEmpty() && balance > 0) {
+                if (!hasPromptedSettle && orders.isNotEmpty() && balance <= 0) {
                     hasPromptedSettle = true
-                    showSettleDialog(driverName, balance)
+                    showSettleDialog(driverName, 0)
                 }
             }
         }
     }
 
     private fun showPaymentDialog() {
+        if (currentBalance <= 0) {
+            Toast.makeText(this, getString(R.string.settle_balance_cleared), Toast.LENGTH_SHORT).show()
+            return
+        }
         val dialogView = layoutInflater.inflate(R.layout.dialog_payment, null)
         val etAmount = dialogView.findViewById<TextInputEditText>(R.id.etPaymentAmount)
         val rgMethod = dialogView.findViewById<RadioGroup>(R.id.rgPaymentMethod)
+        etAmount.setText(currentBalance.toString())
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.payment_title))
@@ -164,6 +185,10 @@ class SettleActivity : AppCompatActivity() {
                 val amount = etAmount.text.toString().toIntOrNull() ?: 0
                 if (amount <= 0) {
                     Toast.makeText(this, getString(R.string.invalid_amount), Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                if (amount > currentBalance) {
+                    Toast.makeText(this, getString(R.string.payment_over_balance), Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
                 val method = when (rgMethod.checkedRadioButtonId) {
@@ -182,6 +207,9 @@ class SettleActivity : AppCompatActivity() {
                     val success = db.paymentDao().insert(payment) != -1L
                     if (success) {
                         Toast.makeText(this@SettleActivity, getString(R.string.payment_success), Toast.LENGTH_SHORT).show()
+                        if (amount == currentBalance) {
+                            showSettleDialog(actDriver.text.toString(), 0)
+                        }
                     } else {
                         Toast.makeText(this@SettleActivity, getString(R.string.payment_error), Toast.LENGTH_SHORT).show()
                     }
@@ -201,7 +229,8 @@ class SettleActivity : AppCompatActivity() {
                     .setMessage(getString(R.string.settle_final_message))
                     .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
                         lifecycleScope.launch {
-                            val success = db.orderDao().updateSettledForDriver(currentDriverId, true) > 0
+                            val settleTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                            val success = db.orderDao().updateSettledForDriver(currentDriverId, true, settleTime) > 0
                             if (success) {
                                 Toast.makeText(this@SettleActivity, getString(R.string.settle_success), Toast.LENGTH_SHORT).show()
                             } else {
