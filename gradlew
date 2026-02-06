@@ -75,11 +75,7 @@ location of your Java installation."
     fi
 fi
 
-if [ -z "$JAVA_OPTS" ] && [ -z "$GRADLE_OPTS" ] ; then
-    DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
-else
-    DEFAULT_JVM_OPTS=""
-fi
+DEFAULT_JVM_OPTS="-Xmx64m -Xms64m"
 
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
