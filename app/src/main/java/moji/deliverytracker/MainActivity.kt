@@ -6,6 +6,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.room.withTransaction
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnSubmit: MaterialButton
     private lateinit var btnSelectDate: MaterialButton
     private var selectedDate: String? = null
+    private val defaultCommission = 20f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,15 @@ class MainActivity : AppCompatActivity() {
         etDescription = findViewById(R.id.etDescription)
         btnSubmit = findViewById(R.id.btnSubmit)
         btnSelectDate = findViewById(R.id.btnSelectDate)
+
+        etDescription.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                submitOrder()
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun setupAutoComplete() {
@@ -110,9 +121,15 @@ class MainActivity : AppCompatActivity() {
 
         btnSubmit.isEnabled = false
         lifecycleScope.launch {
-            val customerId = db.customerDao().getIdByName(customerName)
-            val driverId = db.driverDao().getIdByName(driverName)
-            val neighborhoodId = db.neighborhoodDao().getIdByName(neighborhoodName)
+            val ids = db.withTransaction {
+                val customerId = ensureCustomer(customerName)
+                val driverId = ensureDriver(driverName)
+                val neighborhoodId = ensureNeighborhood(neighborhoodName)
+                Triple(customerId, driverId, neighborhoodId)
+            }
+            val customerId = ids.first
+            val driverId = ids.second
+            val neighborhoodId = ids.third
 
             if (customerId == null || driverId == null || neighborhoodId == null) {
                 btnSubmit.isEnabled = true
@@ -151,6 +168,36 @@ class MainActivity : AppCompatActivity() {
         etDescription.setText("")
         selectedDate = null
         btnSelectDate.text = getString(R.string.date_select_label)
+    }
+
+    private suspend fun ensureCustomer(name: String): Int? {
+        val existing = db.customerDao().getIdByName(name)
+        if (existing != null) return existing
+        db.customerDao().insert(Customer(name = name, nationalId = "", phone = "", address = ""))
+        return db.customerDao().getIdByName(name)
+    }
+
+    private suspend fun ensureDriver(name: String): Int? {
+        val existing = db.driverDao().getIdByName(name)
+        if (existing != null) return existing
+        db.driverDao().insert(
+            Driver(
+                name = name,
+                nationalId = "",
+                plate = "",
+                phone = "",
+                address = "",
+                commission = defaultCommission
+            )
+        )
+        return db.driverDao().getIdByName(name)
+    }
+
+    private suspend fun ensureNeighborhood(name: String): Int? {
+        val existing = db.neighborhoodDao().getIdByName(name)
+        if (existing != null) return existing
+        db.neighborhoodDao().insert(Neighborhood(name = name))
+        return db.neighborhoodDao().getIdByName(name)
     }
 
     override fun onSupportNavigateUp(): Boolean {
