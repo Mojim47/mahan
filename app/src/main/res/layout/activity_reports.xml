@@ -76,7 +76,7 @@
                     android:id="@+id/btnToday"
                     style="@style/Widget.Delivery.Button.Outlined"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="46dp"
                     android:layout_weight="1"
                     android:checkable="true"
                     android:text="@string/report_period_today" />
@@ -85,7 +85,7 @@
                     android:id="@+id/btnWeek"
                     style="@style/Widget.Delivery.Button.Outlined"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="46dp"
                     android:layout_weight="1"
                     android:checkable="true"
                     android:text="@string/report_period_week" />
@@ -94,7 +94,7 @@
                     android:id="@+id/btnMonth"
                     style="@style/Widget.Delivery.Button.Outlined"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="46dp"
                     android:layout_weight="1"
                     android:checkable="true"
                     android:text="@string/report_period_month" />

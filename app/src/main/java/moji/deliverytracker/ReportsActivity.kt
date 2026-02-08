@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ReportsActivity : AppCompatActivity() {
@@ -95,7 +94,7 @@ class ReportsActivity : AppCompatActivity() {
             ) { orders, period, drivers ->
                 // Further filter for TODAY (exact date match) since SQL only does >=
                 val filtered = if (period == ReportPeriod.TODAY) {
-                    val todayPrefix = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    val todayPrefix = DateTimeUtils.todayPrefixDb()
                     orders.filter { it.dateTime.startsWith(todayPrefix) }
                 } else {
                     orders
@@ -120,7 +119,6 @@ class ReportsActivity : AppCompatActivity() {
     }
 
     private fun getSinceDate(period: ReportPeriod): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val cal = Calendar.getInstance()
         when (period) {
             ReportPeriod.TODAY -> {
@@ -131,7 +129,7 @@ class ReportsActivity : AppCompatActivity() {
             ReportPeriod.WEEK -> cal.add(Calendar.DAY_OF_YEAR, -7)
             ReportPeriod.MONTH -> cal.add(Calendar.MONTH, -1)
         }
-        return sdf.format(cal.time)
+        return DateTimeUtils.formatDb(cal.time)
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -100,6 +100,13 @@
     <string name="auth_message">برای دسترسی به تسویه حساب رمز عبور را وارد کنید</string>
     <string name="auth_hint">رمز عبور</string>
     <string name="auth_wrong">رمز عبور اشتباه است</string>
+    <string name="auth_locked">تعداد تلاش بیش از حد است. چند دقیقه بعد دوباره امتحان کنید</string>
+    <string name="auth_change_title">تغییر رمز عبور</string>
+    <string name="auth_change_message">برای امنیت بیشتر، یک رمز جدید تعیین کنید</string>
+    <string name="auth_new_password">رمز جدید</string>
+    <string name="auth_confirm_password">تکرار رمز جدید</string>
+    <string name="auth_change_short">رمز باید حداقل ۴ کاراکتر باشد</string>
+    <string name="auth_change_mismatch">رمزها یکسان نیستند</string>
 
     <string name="action_save">ثبت</string>
     <string name="action_cancel">انصراف</string>
@@ -122,6 +129,7 @@
     <string name="home_customers_format">مشتری‌ها: %1$d</string>
     <string name="home_neighborhoods_format">محله‌ها: %1$d</string>
     <string name="home_actions_title">دسترسی سریع</string>
+    <string name="home_quick_order">ثبت سفارش سریع</string>
     <string name="home_new_order">ثبت سفارش جدید</string>
     <string name="home_orders">سفارش‌ها</string>
     <string name="home_drivers">راننده‌ها</string>

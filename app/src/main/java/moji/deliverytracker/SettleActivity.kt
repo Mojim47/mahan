@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat
 
@@ -51,12 +50,22 @@ class SettleActivity : AppCompatActivity() {
 
         SecurityHelper.migrateIfNeeded(this)
 
+        if (SecurityHelper.isLockedOut(this)) {
+            Toast.makeText(this, getString(R.string.auth_locked), Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
+
         if (!SecurityHelper.isAuthenticated(this)) {
             showAuthDialog()
             return
         }
 
-        initializeViews()
+        if (SecurityHelper.needsPasswordChange(this)) {
+            showChangePasswordDialog()
+        } else {
+            initializeViews()
+        }
     }
 
     private fun initializeViews() {
@@ -144,14 +153,13 @@ class SettleActivity : AppCompatActivity() {
                 val total = orders.sumOf { it.amount }
                 val commissionAmount = MoneyCalculator.commissionAmount(total, commission)
                 val netIncome = MoneyCalculator.netIncome(total, commission)
-                val paidEffective = if (total == 0) 0 else totalPaid
-                val balance = MoneyCalculator.balance(netIncome, paidEffective)
+                val balance = MoneyCalculator.balance(netIncome, totalPaid)
                 currentBalance = balance
 
                 tvTotal.text = getString(R.string.settle_total_format, CurrencyFormatter.formatNumber(total.toLong()))
                 tvCommission.text = getString(R.string.settle_commission_format, commission, CurrencyFormatter.formatNumber(commissionAmount.toLong()))
                 tvNet.text = getString(R.string.settle_net_format, CurrencyFormatter.formatNumber(netIncome.toLong()))
-                tvPaid.text = getString(R.string.settle_paid_format, CurrencyFormatter.formatNumber(paidEffective.toLong()))
+                tvPaid.text = getString(R.string.settle_paid_format, CurrencyFormatter.formatNumber(totalPaid.toLong()))
                 tvBalance.text = getString(R.string.settle_balance_format, CurrencyFormatter.formatNumber(balance.toLong()))
                 tvBalance.setTextColor(
                     ContextCompat.getColor(
@@ -199,12 +207,11 @@ class SettleActivity : AppCompatActivity() {
                     else -> getString(R.string.payment_cash)
                 }
                 lifecycleScope.launch {
-                    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                     val payment = Payment(
                         driverId = currentDriverId,
                         amount = amount,
                         method = method,
-                        dateTime = sdf.format(Date())
+                        dateTime = DateTimeUtils.nowDb()
                     )
                     val success = db.paymentDao().insert(payment) != -1L
                     if (success) {
@@ -231,8 +238,8 @@ class SettleActivity : AppCompatActivity() {
                     .setMessage(getString(R.string.settle_final_message))
                     .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
                         lifecycleScope.launch {
-                            val settleTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-                            val success = db.orderDao().updateSettledForDriver(currentDriverId, true, settleTime) > 0
+                            val success = db.orderDao()
+                                .updateSettledForDriver(currentDriverId, true, DateTimeUtils.nowDb()) > 0
                             if (success) {
                                 Toast.makeText(this@SettleActivity, getString(R.string.settle_success), Toast.LENGTH_SHORT).show()
                             } else {
@@ -259,14 +266,55 @@ class SettleActivity : AppCompatActivity() {
             .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
                 val password = input.text.toString()
                 if (SecurityHelper.verifyPassword(this, password)) {
+                    SecurityHelper.clearFailedAttempts(this)
                     SecurityHelper.setAuthenticated(this, true)
-                    initializeViews()
+                    if (SecurityHelper.needsPasswordChange(this)) {
+                        showChangePasswordDialog()
+                    } else {
+                        initializeViews()
+                    }
                 } else {
+                    SecurityHelper.registerFailedAttempt(this)
+                    if (SecurityHelper.isLockedOut(this)) {
+                        Toast.makeText(this, getString(R.string.auth_locked), Toast.LENGTH_LONG).show()
+                        finish()
+                        return@setPositiveButton
+                    }
                     Toast.makeText(this, getString(R.string.auth_wrong), Toast.LENGTH_SHORT).show()
                     finish()
                 }
             }
             .setNegativeButton(getString(R.string.action_cancel)) { _, _ -> finish() }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun showChangePasswordDialog() {
+        val view = layoutInflater.inflate(R.layout.dialog_change_password, null)
+        val etNew = view.findViewById<TextInputEditText>(R.id.etNewPassword)
+        val etConfirm = view.findViewById<TextInputEditText>(R.id.etConfirmPassword)
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.auth_change_title))
+            .setMessage(getString(R.string.auth_change_message))
+            .setView(view)
+            .setPositiveButton(getString(R.string.action_save)) { _, _ ->
+                val newPass = etNew.text?.toString()?.trim().orEmpty()
+                val confirm = etConfirm.text?.toString()?.trim().orEmpty()
+                if (newPass.length < 4) {
+                    Toast.makeText(this, getString(R.string.auth_change_short), Toast.LENGTH_SHORT).show()
+                    showChangePasswordDialog()
+                    return@setPositiveButton
+                }
+                if (newPass != confirm) {
+                    Toast.makeText(this, getString(R.string.auth_change_mismatch), Toast.LENGTH_SHORT).show()
+                    showChangePasswordDialog()
+                    return@setPositiveButton
+                }
+                SecurityHelper.setPassword(this, newPass)
+                SecurityHelper.markPasswordChanged(this)
+                initializeViews()
+            }
             .setCancelable(false)
             .show()
     }

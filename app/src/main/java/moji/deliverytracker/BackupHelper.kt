@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileWriter
 import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,7 +39,7 @@ object BackupHelper {
 
         return withContext(Dispatchers.IO) {
             try {
-                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
                 val orders = db.orderDao().getAllWithNamesOnce()
                 val fileName = "orders_$timestamp.csv"
 
@@ -91,8 +90,10 @@ object BackupHelper {
         if (!dir.exists()) dir.mkdirs()
 
         val file = File(dir, fileName)
-        FileWriter(file).use { writer ->
-            writeCsvContent(writer, orders)
+        file.outputStream().use { stream ->
+            OutputStreamWriter(stream, Charsets.UTF_8).use { writer ->
+                writeCsvContent(writer, orders)
+            }
         }
         return Pair(true, file.absolutePath)
     }

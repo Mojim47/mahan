@@ -8,8 +8,6 @@ import androidx.room.withTransaction
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 class AddDriverActivity : AppCompatActivity() {
     private lateinit var db: AppDatabase
@@ -80,18 +78,21 @@ class AddDriverActivity : AppCompatActivity() {
 
             if (isEditMode) {
                 lifecycleScope.launch {
-                    val success = db.withTransaction {
-                        val existing = db.driverDao().getById(driverId) ?: return@withTransaction false
+                    val updateResult = db.withTransaction {
+                        val existing = db.driverDao().getById(driverId) ?: return@withTransaction 0
                         if (existing.commission != commission) {
-                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                             db.commissionHistoryDao().insert(
                                 CommissionHistory(
                                     driverId = existing.id,
                                     oldCommission = existing.commission,
                                     newCommission = commission,
-                                    dateTime = sdf.format(Date())
+                                    dateTime = DateTimeUtils.nowDb()
                                 )
                             )
+                        }
+                        val conflictingId = db.driverDao().getIdByName(name)
+                        if (conflictingId != null && conflictingId != existing.id) {
+                            return@withTransaction -1
                         }
                         val updated = existing.copy(
                             name = name,
@@ -101,12 +102,14 @@ class AddDriverActivity : AppCompatActivity() {
                             address = address,
                             commission = commission
                         )
-                        db.driverDao().update(updated) > 0
+                        db.driverDao().update(updated)
                     }
                     btnSave.isEnabled = true
-                    if (success) {
+                    if (updateResult > 0) {
                         Toast.makeText(this@AddDriverActivity, getString(R.string.driver_updated), Toast.LENGTH_SHORT).show()
                         finish()
+                    } else if (updateResult == -1) {
+                        Toast.makeText(this@AddDriverActivity, getString(R.string.name_duplicate_error), Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@AddDriverActivity, getString(R.string.driver_update_error), Toast.LENGTH_SHORT).show()
                     }

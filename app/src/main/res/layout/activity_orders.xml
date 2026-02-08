@@ -31,11 +31,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp"
+                style="@style/Widget.Delivery.TextInput.Outlined"
                 app:startIconDrawable="@android:drawable/ic_menu_search"
                 app:endIconMode="clear_text">
 
@@ -59,34 +55,28 @@
                     android:id="@+id/btnFilterAll"
                     style="@style/Widget.Delivery.Button.Tonal"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="46dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="@string/filter_all"
-                    android:textSize="14sp"
-                    app:cornerRadius="8dp" />
+                    android:text="@string/filter_all" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilterSettled"
                     style="@style/Widget.Delivery.Button.Outlined"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="46dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="@string/filter_settled"
-                    android:textSize="14sp"
-                    app:cornerRadius="8dp" />
+                    android:text="@string/filter_settled" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilterUnsettled"
                     style="@style/Widget.Delivery.Button.Outlined"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="46dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="@string/filter_unsettled"
-                    android:textSize="14sp"
-                    app:cornerRadius="8dp" />
+                    android:text="@string/filter_unsettled" />
 
             </LinearLayout>
 

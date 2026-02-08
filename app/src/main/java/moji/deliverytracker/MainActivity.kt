@@ -11,7 +11,6 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -52,8 +51,7 @@ class MainActivity : AppCompatActivity() {
         btnSelectDate = findViewById(R.id.btnSelectDate)
 
         // Show current date by default
-        val displaySdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        btnSelectDate.text = getString(R.string.date_selected_format, displaySdf.format(Date()))
+        btnSelectDate.text = getString(R.string.date_selected_format, DateTimeUtils.formatDisplayDate(Date()))
 
         etDescription.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
@@ -89,11 +87,9 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         picker.addOnPositiveButtonClickListener { selection ->
-            val inputSdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            val displaySdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val selected = Date(selection)
-            selectedDate = inputSdf.format(selected)
-            btnSelectDate.text = getString(R.string.date_selected_format, displaySdf.format(selected))
+            selectedDate = DateTimeUtils.formatDb(selected)
+            btnSelectDate.text = getString(R.string.date_selected_format, DateTimeUtils.formatDisplayDate(selected))
         }
 
         picker.show(supportFragmentManager, "DATE_PICKER")
@@ -132,14 +128,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             val (customerId, driverId, neighborhoodId) = ids
-            val now = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
             val order = Order(
                 customerId = customerId,
                 driverId = driverId,
                 neighborhoodId = neighborhoodId,
                 amount = amount!!,
                 description = description,
-                dateTime = selectedDate ?: now,
+                dateTime = selectedDate ?: DateTimeUtils.nowDb(),
                 settled = false,
                 settledAt = null
             )

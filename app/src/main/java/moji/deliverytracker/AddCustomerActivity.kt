@@ -69,6 +69,12 @@ class AddCustomerActivity : AppCompatActivity() {
                         Toast.makeText(this@AddCustomerActivity, getString(R.string.customer_update_error), Toast.LENGTH_SHORT).show()
                         return@launch
                     }
+                    val conflictingId = db.customerDao().getIdByName(name)
+                    if (conflictingId != null && conflictingId != existing.id) {
+                        btnSave.isEnabled = true
+                        Toast.makeText(this@AddCustomerActivity, getString(R.string.name_duplicate_error), Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
                     val updated = existing.copy(
                         name = name,
                         nationalId = nationalId,

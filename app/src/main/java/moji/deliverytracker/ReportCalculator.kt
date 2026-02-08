@@ -1,6 +1,5 @@
 ﻿package moji.deliverytracker
 
-import java.text.SimpleDateFormat
 import java.util.*
 
 enum class ReportPeriod {
@@ -19,15 +18,18 @@ data class ReportSummary(
 )
 
 object ReportCalculator {
-    private val dayFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    private val orderFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    private fun dayFormat(): java.text.SimpleDateFormat =
+        java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
+    private fun orderFormat(): java.text.SimpleDateFormat =
+        java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
 
     fun filterOrders(orders: List<Order>, period: ReportPeriod, now: Calendar = Calendar.getInstance()): List<Order> {
-        val todayKey = dayFormat.format(now.time)
+        val todayKey = dayFormat().format(now.time)
         val nowTime = now.timeInMillis
 
         return orders.filter { order ->
-            val orderDate = orderFormat.parse(order.dateTime) ?: Date(0)
+            val orderDate = orderFormat().parse(order.dateTime) ?: Date(0)
             val orderCal = Calendar.getInstance().apply { time = orderDate }
             val orderTime = orderCal.timeInMillis
 

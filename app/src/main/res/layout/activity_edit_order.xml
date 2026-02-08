@@ -28,21 +28,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/edit_order_title"
-                    android:textSize="24sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="@color/md_theme_primary"
+                    android:textColor="@color/md_theme_on_surface"
                     android:gravity="center"
-                    android:layout_marginBottom="24dp" />
+                    android:layout_marginBottom="16dp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.Delivery.TextInput.Outlined"
                     app:startIconDrawable="@android:drawable/ic_menu_myplaces"
                     app:startIconTint="@color/md_theme_primary">
 
@@ -60,11 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.Delivery.TextInput.Outlined"
                     app:startIconDrawable="@android:drawable/ic_menu_directions"
                     app:startIconTint="@color/md_theme_secondary">
 
@@ -82,11 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.Delivery.TextInput.Outlined"
                     app:startIconDrawable="@android:drawable/ic_dialog_map"
                     app:startIconTint="@color/md_theme_tertiary">
 
@@ -104,11 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.Delivery.TextInput.Outlined"
                     app:suffixText="@string/toman"
                     app:startIconDrawable="@android:drawable/ic_menu_sort_by_size"
                     app:startIconTint="@color/md_theme_primary">
@@ -127,11 +111,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.Delivery.TextInput.Outlined"
                     app:counterEnabled="true"
                     app:counterMaxLength="200">
 
@@ -149,11 +129,10 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSave"
+                    style="@style/Widget.Delivery.Button.Primary"
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
+                    android:layout_height="56dp"
                     android:text="@string/save_changes"
-                    android:textSize="18sp"
-                    app:cornerRadius="12dp"
                     app:icon="@android:drawable/ic_menu_save"
                     app:iconGravity="textStart"
                     app:iconSize="24dp" />
@@ -162,12 +141,10 @@
                     android:id="@+id/btnDelete"
                     style="@style/Widget.Delivery.Button.Outlined"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="52dp"
                     android:layout_marginTop="8dp"
                     android:text="@string/btn_delete"
-                    android:textSize="16sp"
                     android:textColor="@color/md_theme_error"
-                    app:cornerRadius="12dp"
                     app:strokeColor="@color/md_theme_error"
                     app:icon="@android:drawable/ic_menu_delete"
                     app:iconTint="@color/md_theme_error"

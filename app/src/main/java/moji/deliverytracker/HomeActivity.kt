@@ -12,9 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
 class HomeActivity : AppCompatActivity() {
@@ -46,6 +46,10 @@ class HomeActivity : AppCompatActivity() {
 
         requestNotificationPermissionIfNeeded()
         startDateTimeClock()
+
+        findViewById<MaterialButton>(R.id.btnQuickOrder).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
 
         findViewById<MaterialCardView>(R.id.cardNewOrder).setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
@@ -92,12 +96,14 @@ class HomeActivity : AppCompatActivity() {
 
     private fun startDateTimeClock() {
         val tvDateTime = findViewById<TextView>(R.id.tvDateTime)
-        val dateFmt = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
-        val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
         dateTimeRunnable = object : Runnable {
             override fun run() {
                 val now = Date()
-                tvDateTime.text = getString(R.string.home_datetime_format, dateFmt.format(now), timeFmt.format(now))
+                tvDateTime.text = getString(
+                    R.string.home_datetime_format,
+                    DateTimeUtils.formatDisplayDate(now),
+                    DateTimeUtils.formatDisplayTime(now)
+                )
                 dateTimeHandler.postDelayed(this, 30_000L)
             }
         }
@@ -132,7 +138,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun observeStats() {
-        val todayPrefix = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) + "%"
+        val todayPrefix = DateTimeUtils.todayPrefixDb() + "%"
 
         lifecycleScope.launch {
             db.orderDao().getSummaryFlow(todayPrefix).collectLatest { summary ->

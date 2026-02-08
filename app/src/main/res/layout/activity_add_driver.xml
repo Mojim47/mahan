@@ -111,11 +111,10 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSaveDriver"
+                    style="@style/Widget.Delivery.Button.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:text="@string/save_label"
-                    android:textSize="16sp"
-                    app:cornerRadius="16dp"
                     app:icon="@android:drawable/ic_menu_save"
                     app:iconGravity="textStart"
                     app:iconSize="20dp" />
