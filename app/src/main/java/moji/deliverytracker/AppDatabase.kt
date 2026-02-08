@@ -17,7 +17,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         CommissionHistory::class
     ],
     version = 7,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun driverDao(): DriverDao

@@ -18,16 +18,19 @@ interface CustomerDao {
     @Query("DELETE FROM customers WHERE name = :name")
     suspend fun deleteByName(name: String): Int
 
-    @Query("SELECT * FROM customers ORDER BY name ASC")
+    @Query("DELETE FROM customers WHERE id = :id")
+    suspend fun deleteById(id: Int): Int
+
+    @Query("SELECT * FROM customers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     fun getAllFlow(): Flow<List<Customer>>
 
-    @Query("SELECT * FROM customers ORDER BY name ASC")
+    @Query("SELECT * FROM customers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     suspend fun getAllOnce(): List<Customer>
 
-    @Query("SELECT name FROM customers ORDER BY name ASC")
+    @Query("SELECT name FROM customers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     fun getNamesFlow(): Flow<List<String>>
 
-    @Query("SELECT name FROM customers ORDER BY name ASC")
+    @Query("SELECT name FROM customers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     suspend fun getNamesOnce(): List<String>
 
     @Query("SELECT id FROM customers WHERE name = :name LIMIT 1")
@@ -36,6 +39,6 @@ interface CustomerDao {
     @Query("SELECT * FROM customers WHERE id = :id LIMIT 1")
     suspend fun getById(id: Int): Customer?
 
-    @Query("SELECT COUNT(*) FROM customers")
+    @Query("SELECT COUNT(*) FROM customers WHERE name != '__UNKNOWN__'")
     fun getCountFlow(): Flow<Int>
 }

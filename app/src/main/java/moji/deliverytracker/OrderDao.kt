@@ -117,4 +117,16 @@ interface OrderDao {
 
     @Query("SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*) AS count FROM orders WHERE date_time LIKE :datePrefix")
     fun getSummaryFlow(datePrefix: String): Flow<OrderSummary>
+
+    @Query("SELECT COUNT(*) FROM orders WHERE driver_id = :driverId")
+    suspend fun countByDriver(driverId: Int): Int
+
+    @Query("SELECT COUNT(*) FROM orders WHERE customer_id = :customerId")
+    suspend fun countByCustomer(customerId: Int): Int
+
+    @Query("SELECT COUNT(*) FROM orders WHERE neighborhood_id = :neighborhoodId")
+    suspend fun countByNeighborhood(neighborhoodId: Int): Int
+
+    @Query("SELECT * FROM orders WHERE date_time >= :since ORDER BY id DESC")
+    fun getOrdersSinceFlow(since: String): Flow<List<Order>>
 }

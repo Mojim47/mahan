@@ -43,4 +43,7 @@ interface PaymentDao {
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE driver_id = :driverId AND date_time >= :since")
     suspend fun getTotalPaidSinceOnce(driverId: Int, since: String): Int
+
+    @Query("SELECT COUNT(*) FROM payments WHERE driver_id = :driverId")
+    suspend fun countByDriver(driverId: Int): Int
 }

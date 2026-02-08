@@ -1,62 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:background="@drawable/bg_app_gradient">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnAddNeighborhood"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="@string/add_neighborhood_button"
-        android:textSize="16sp"
-        android:padding="16dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerNeighborhoods"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:shimmer_auto_start="true"
-        app:shimmer_duration="900">
-
-        <LinearLayout
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerNeighborhoods"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            app:shimmer_auto_start="true"
+            app:shimmer_duration="900">
 
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/shimmer_placeholder" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/shimmer_placeholder" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/shimmer_placeholder" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/shimmer_placeholder" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/shimmer_placeholder" />
 
-        </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/shimmer_placeholder" />
 
-    </com.facebook.shimmer.ShimmerFrameLayout>
+            </LinearLayout>
 
-    <ListView
-        android:id="@+id/listNeighborhoods"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
-</LinearLayout>
+        <ListView
+            android:id="@+id/listNeighborhoods"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="8dp"
+            android:clipToPadding="false"
+            android:paddingBottom="72dp" />
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btnAddNeighborhood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="16dp"
+        android:text="@string/add_neighborhood_button"
+        android:textSize="14sp"
+        app:icon="@android:drawable/ic_input_add"
+        app:backgroundTint="@color/md_theme_primary"
+        app:iconTint="@color/md_theme_on_primary"
+        android:textColor="@color/md_theme_on_primary" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

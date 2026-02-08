@@ -19,9 +19,10 @@ data class ReportSummary(
 )
 
 object ReportCalculator {
+    private val dayFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val orderFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
     fun filterOrders(orders: List<Order>, period: ReportPeriod, now: Calendar = Calendar.getInstance()): List<Order> {
-        val dayFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val orderFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val todayKey = dayFormat.format(now.time)
         val nowTime = now.timeInMillis
 

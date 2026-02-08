@@ -200,6 +200,15 @@
     <string name="notif_orders_channel">سفارشات</string>
     <string name="notif_orders_channel_desc">اعلانات سفارشات جدید</string>
     <string name="backup_save_error">خطا در ذخیره فایل</string>
+    <string name="backup_permission_error">دسترسی به حافظه داده نشده است</string>
+    <string name="delete_driver_has_orders">این راننده دارای سفارش است و قابل حذف نیست</string>
+    <string name="delete_customer_has_orders">این مشتری دارای سفارش است و قابل حذف نیست</string>
+    <string name="delete_neighborhood_has_orders">این محله دارای سفارش است و قابل حذف نیست</string>
+    <string name="error_driver_not_found">راننده یافت نشد. لطفاً از لیست انتخاب کنید</string>
+    <string name="error_customer_not_found">مشتری یافت نشد. لطفاً از لیست انتخاب کنید</string>
+    <string name="error_neighborhood_not_found">محله یافت نشد. لطفاً از لیست انتخاب کنید</string>
+    <string name="error_amount_zero">مبلغ باید بیشتر از صفر باشد</string>
+    <string name="error_entities_not_found">مشتری، راننده یا محله یافت نشد. لطفاً ابتدا آنها را ثبت کنید</string>
     <string name="customer_name_hint_required">نام مشتری *</string>
     <string name="driver_name_hint_required">نام راننده *</string>
     <string name="national_id_hint">کد ملی</string>
@@ -217,4 +226,6 @@
     <string name="label_address">آدرس</string>
     <string name="label_plate">پلاک</string>
     <string name="details_empty">اطلاعات تکمیلی ندارد</string>
+    <string name="home_greeting">خوش آمدید 👋</string>
+    <string name="home_datetime_format">%1$s | ساعت %2$s</string>
 </resources>

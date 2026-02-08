@@ -11,7 +11,10 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ReportsActivity : AppCompatActivity() {
 
@@ -83,11 +86,20 @@ class ReportsActivity : AppCompatActivity() {
         shimmer.startShimmer()
         lifecycleScope.launch {
             combine(
+                periodFlow.flatMapLatest { period ->
+                    val since = getSinceDate(period)
+                    db.orderDao().getOrdersSinceFlow(since)
+                },
                 periodFlow,
-                db.orderDao().getAllFlow(),
                 db.driverDao().getAllFlow()
-            ) { period, orders, drivers ->
-                val filtered = ReportCalculator.filterOrders(orders, period)
+            ) { orders, period, drivers ->
+                // Further filter for TODAY (exact date match) since SQL only does >=
+                val filtered = if (period == ReportPeriod.TODAY) {
+                    val todayPrefix = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    orders.filter { it.dateTime.startsWith(todayPrefix) }
+                } else {
+                    orders
+                }
                 ReportCalculator.calculateSummary(filtered, drivers)
             }.collectLatest { summary ->
                 if (firstLoad) {
@@ -105,6 +117,21 @@ class ReportsActivity : AppCompatActivity() {
                 tvUnsettled.text = CurrencyFormatter.formatToman(summary.unsettled, label)
             }
         }
+    }
+
+    private fun getSinceDate(period: ReportPeriod): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val cal = Calendar.getInstance()
+        when (period) {
+            ReportPeriod.TODAY -> {
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+            }
+            ReportPeriod.WEEK -> cal.add(Calendar.DAY_OF_YEAR, -7)
+            ReportPeriod.MONTH -> cal.add(Calendar.MONTH, -1)
+        }
+        return sdf.format(cal.time)
     }
 
     override fun onSupportNavigateUp(): Boolean {

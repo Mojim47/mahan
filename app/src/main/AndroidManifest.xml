@@ -18,17 +18,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".OrdersActivity" />
-        <activity android:name=".ManageActivity" />
-        <activity android:name=".SettleActivity" />
-        <activity android:name=".EditOrderActivity" />
-        <activity android:name=".ReportsActivity" />
-        <activity android:name=".PaymentsActivity" />
-        <activity android:name=".DriversListActivity" />
-        <activity android:name=".AddDriverActivity" />
-        <activity android:name=".CustomersListActivity" />
-        <activity android:name=".AddCustomerActivity" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".OrdersActivity" android:exported="false" />
+        <activity android:name=".ManageActivity" android:exported="false" />
+        <activity android:name=".SettleActivity" android:exported="false" />
+        <activity android:name=".EditOrderActivity" android:exported="false" />
+        <activity android:name=".ReportsActivity" android:exported="false" />
+        <activity android:name=".PaymentsActivity" android:exported="false" />
+        <activity android:name=".DriversListActivity" android:exported="false" />
+        <activity android:name=".AddDriverActivity" android:exported="false" />
+        <activity android:name=".CustomersListActivity" android:exported="false" />
+        <activity android:name=".AddCustomerActivity" android:exported="false" />
     </application>
 
 </manifest>

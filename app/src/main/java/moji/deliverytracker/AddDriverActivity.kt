@@ -35,12 +35,7 @@ class AddDriverActivity : AppCompatActivity() {
             if (driverId != -1) {
                 isEditMode = true
                 supportActionBar?.title = getString(R.string.edit_driver_title)
-                etName.setText(it.getStringExtra("driver_name"))
-                etNationalId.setText(it.getStringExtra("driver_national_id"))
-                etPlate.setText(it.getStringExtra("driver_plate"))
-                etPhone.setText(it.getStringExtra("driver_phone"))
-                etAddress.setText(it.getStringExtra("driver_address"))
-                etCommission.setText(it.getFloatExtra("driver_commission", 0f).toString())
+                loadDriverData(etName, etNationalId, etPlate, etPhone, etAddress, etCommission)
             } else {
                 supportActionBar?.title = getString(R.string.add_driver_title)
             }
@@ -81,6 +76,8 @@ class AddDriverActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            btnSave.isEnabled = false
+
             if (isEditMode) {
                 lifecycleScope.launch {
                     val success = db.withTransaction {
@@ -106,6 +103,7 @@ class AddDriverActivity : AppCompatActivity() {
                         )
                         db.driverDao().update(updated) > 0
                     }
+                    btnSave.isEnabled = true
                     if (success) {
                         Toast.makeText(this@AddDriverActivity, getString(R.string.driver_updated), Toast.LENGTH_SHORT).show()
                         finish()
@@ -125,6 +123,7 @@ class AddDriverActivity : AppCompatActivity() {
                             commission = commission
                         )
                     )
+                    btnSave.isEnabled = true
                     if (result != -1L) {
                         Toast.makeText(this@AddDriverActivity, getString(R.string.driver_added), Toast.LENGTH_SHORT).show()
                         finish()
@@ -132,6 +131,30 @@ class AddDriverActivity : AppCompatActivity() {
                         Toast.makeText(this@AddDriverActivity, getString(R.string.name_duplicate_error), Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+        }
+    }
+
+    private fun loadDriverData(
+        etName: TextInputEditText,
+        etNationalId: TextInputEditText,
+        etPlate: TextInputEditText,
+        etPhone: TextInputEditText,
+        etAddress: TextInputEditText,
+        etCommission: TextInputEditText
+    ) {
+        lifecycleScope.launch {
+            val driver = db.driverDao().getById(driverId)
+            if (driver != null) {
+                etName.setText(driver.name)
+                etNationalId.setText(driver.nationalId)
+                etPlate.setText(driver.plate)
+                etPhone.setText(driver.phone)
+                etAddress.setText(driver.address)
+                etCommission.setText(driver.commission.toString())
+            } else {
+                Toast.makeText(this@AddDriverActivity, getString(R.string.driver_update_error), Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
     }

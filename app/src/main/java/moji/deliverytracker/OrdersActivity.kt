@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,13 +30,14 @@ class OrdersActivity : AppCompatActivity() {
     private lateinit var adapter: OrderAdapter
     private var allOrders = listOf<OrderWithNames>()
     private var currentFilter = "all"
-    private var filterDriver: String? = null
-    private var filterCustomer: String? = null
     private var firstLoad = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_orders)
+
+        supportActionBar?.title = getString(R.string.orders_list_title)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         db = AppDatabase.getInstance(this)
         rvOrders = findViewById(R.id.rvOrders)
@@ -90,9 +92,10 @@ class OrdersActivity : AppCompatActivity() {
     }
 
     private fun updateFilterButtons() {
-        btnFilterAll.icon = if (currentFilter == "all") resources.getDrawable(android.R.drawable.checkbox_on_background, theme) else null
-        btnFilterSettled.icon = if (currentFilter == "settled") resources.getDrawable(android.R.drawable.checkbox_on_background, theme) else null
-        btnFilterUnsettled.icon = if (currentFilter == "unsettled") resources.getDrawable(android.R.drawable.checkbox_on_background, theme) else null
+        val checkIcon = ContextCompat.getDrawable(this, android.R.drawable.checkbox_on_background)
+        btnFilterAll.icon = if (currentFilter == "all") checkIcon else null
+        btnFilterSettled.icon = if (currentFilter == "settled") checkIcon else null
+        btnFilterUnsettled.icon = if (currentFilter == "unsettled") checkIcon else null
     }
 
     private fun observeOrders() {
@@ -125,14 +128,6 @@ class OrdersActivity : AppCompatActivity() {
                     it.driverName.lowercase().contains(searchText) ||
                     it.neighborhoodName.lowercase().contains(searchText)
             }
-        }
-
-        if (filterDriver != null) {
-            filtered = filtered.filter { it.driverName == filterDriver }
-        }
-
-        if (filterCustomer != null) {
-            filtered = filtered.filter { it.customerName == filterCustomer }
         }
 
         adapter.updateList(filtered.toMutableList())

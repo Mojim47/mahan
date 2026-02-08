@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 class OrderAdapter(
@@ -16,9 +17,15 @@ class OrderAdapter(
 ) : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
     fun updateList(newList: MutableList<OrderWithNames>) {
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = orders.size
+            override fun getNewListSize() = newList.size
+            override fun areItemsTheSame(oldPos: Int, newPos: Int) = orders[oldPos].id == newList[newPos].id
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) = orders[oldPos] == newList[newPos]
+        })
         orders.clear()
         orders.addAll(newList)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

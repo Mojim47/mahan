@@ -1,6 +1,5 @@
 ﻿package moji.deliverytracker
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -34,7 +33,6 @@ class SettleActivity : AppCompatActivity() {
     private lateinit var tvBalance: TextView
     private lateinit var btnPayment: MaterialButton
     private lateinit var adapter: OrderAdapter
-    private lateinit var prefs: SharedPreferences
     private lateinit var shimmer: ShimmerFrameLayout
     private var currentDriverId: Int = -1
     private var driverJob: Job? = null
@@ -42,10 +40,7 @@ class SettleActivity : AppCompatActivity() {
     private var driverFirstLoad = true
     private var currentBalance: Int = 0
     private var lastSettlementTime: String = "0000-01-01 00:00:00"
-
-    companion object {
-        private const val PREF_AUTH = "auth_encrypted"
-    }
+    private var isLoadingDriver = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +49,9 @@ class SettleActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.settle_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        prefs = getSharedPreferences("secure_prefs", MODE_PRIVATE)
+        SecurityHelper.migrateIfNeeded(this)
 
-        if (!isAuthenticated()) {
+        if (!SecurityHelper.isAuthenticated(this)) {
             showAuthDialog()
             return
         }
@@ -88,15 +83,20 @@ class SettleActivity : AppCompatActivity() {
         }
 
         btnLoad.setOnClickListener {
+            if (isLoadingDriver) return@setOnClickListener
             val driverName = actDriver.text.toString().trim()
             if (driverName.isEmpty()) {
                 Toast.makeText(this, getString(R.string.select_driver), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            isLoadingDriver = true
+            btnLoad.isEnabled = false
             lifecycleScope.launch {
                 val driverId = db.driverDao().getIdByName(driverName)
                 if (driverId == null) {
                     Toast.makeText(this@SettleActivity, getString(R.string.select_driver), Toast.LENGTH_SHORT).show()
+                    isLoadingDriver = false
+                    btnLoad.isEnabled = true
                     return@launch
                 }
                 currentDriverId = driverId
@@ -134,6 +134,8 @@ class SettleActivity : AppCompatActivity() {
             }.collectLatest { (orders, totalPaid, commission) ->
                 if (driverFirstLoad) {
                     driverFirstLoad = false
+                    isLoadingDriver = false
+                    btnLoad.isEnabled = true
                     shimmer.stopShimmer()
                     shimmer.visibility = View.GONE
                     rvOrders.visibility = View.VISIBLE
@@ -162,7 +164,7 @@ class SettleActivity : AppCompatActivity() {
 
                 if (!hasPromptedSettle && orders.isNotEmpty() && balance <= 0) {
                     hasPromptedSettle = true
-                    showSettleDialog(driverName, 0)
+                    showSettleDialog(driverName, netIncome)
                 }
             }
         }
@@ -245,10 +247,6 @@ class SettleActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun isAuthenticated(): Boolean {
-        return prefs.getBoolean(PREF_AUTH, false)
-    }
-
     private fun showAuthDialog() {
         val input = EditText(this)
         input.hint = getString(R.string.auth_hint)
@@ -260,10 +258,8 @@ class SettleActivity : AppCompatActivity() {
             .setView(input)
             .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
                 val password = input.text.toString()
-                val hashedPassword = password.hashCode().toString()
-                val storedHash = prefs.getString("pass_hash", "1234".hashCode().toString())
-                if (hashedPassword == storedHash) {
-                    prefs.edit().putBoolean(PREF_AUTH, true).apply()
+                if (SecurityHelper.verifyPassword(this, password)) {
+                    SecurityHelper.setAuthenticated(this, true)
                     initializeViews()
                 } else {
                     Toast.makeText(this, getString(R.string.auth_wrong), Toast.LENGTH_SHORT).show()
@@ -273,6 +269,12 @@ class SettleActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.action_cancel)) { _, _ -> finish() }
             .setCancelable(false)
             .show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        driverJob?.cancel()
+        driverJob = null
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -42,6 +42,19 @@ class CustomersListActivity : AppCompatActivity() {
         tvEmpty = findViewById(R.id.tvEmptyCustomers)
         shimmer = findViewById(R.id.shimmerCustomers)
 
+        adapter = CustomerAdapter(emptyList()) { customer, action ->
+            when (action) {
+                "edit" -> {
+                    val intent = Intent(this, AddCustomerActivity::class.java).apply {
+                        putExtra("customer_id", customer.id)
+                    }
+                    startActivity(intent)
+                }
+                "delete" -> confirmDelete(customer)
+            }
+        }
+        recyclerView.adapter = adapter
+
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) { filterCustomers() }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -78,22 +91,7 @@ class CustomersListActivity : AppCompatActivity() {
                 it.phone.contains(query)
         }
 
-        adapter = CustomerAdapter(filtered) { customer, action ->
-            when (action) {
-                "edit" -> {
-                    val intent = Intent(this, AddCustomerActivity::class.java).apply {
-                        putExtra("customer_id", customer.id)
-                        putExtra("customer_name", customer.name)
-                        putExtra("customer_national_id", customer.nationalId)
-                        putExtra("customer_phone", customer.phone)
-                        putExtra("customer_address", customer.address)
-                    }
-                    startActivity(intent)
-                }
-                "delete" -> confirmDelete(customer)
-            }
-        }
-        recyclerView.adapter = adapter
+        adapter.updateList(filtered)
 
         if (filtered.isEmpty()) {
             tvEmpty.visibility = View.VISIBLE
@@ -105,26 +103,38 @@ class CustomersListActivity : AppCompatActivity() {
     }
 
     private fun confirmDelete(customer: Customer) {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.delete_customer_title))
-            .setMessage(getString(R.string.delete_customer_message, customer.name))
-            .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
-                lifecycleScope.launch {
-                    val success = db.customerDao().deleteByName(customer.name) > 0
-                    if (success) {
-                        Toast.makeText(this@CustomersListActivity, getString(R.string.delete_customer_success), Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@CustomersListActivity, getString(R.string.delete_customer_error), Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val hasOrders = EntityHelper.customerHasOrders(db, customer.id)
+
+            if (hasOrders) {
+                Toast.makeText(
+                    this@CustomersListActivity,
+                    getString(R.string.delete_customer_has_orders),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            AlertDialog.Builder(this@CustomersListActivity)
+                .setTitle(getString(R.string.delete_customer_title))
+                .setMessage(getString(R.string.delete_customer_message, customer.name))
+                .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
+                    lifecycleScope.launch {
+                        val success = db.customerDao().deleteById(customer.id) > 0
+                        if (success) {
+                            Toast.makeText(this@CustomersListActivity, getString(R.string.delete_customer_success), Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this@CustomersListActivity, getString(R.string.delete_customer_error), Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
-            }
-            .setNegativeButton(getString(R.string.action_no), null)
-            .show()
+                .setNegativeButton(getString(R.string.action_no), null)
+                .show()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
     }
-
 }

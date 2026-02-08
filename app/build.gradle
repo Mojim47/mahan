@@ -30,14 +30,20 @@ android {
 		jvmTarget = "11"
 	}
 
+	kapt {
+		arguments {
+			arg("room.schemaLocation", "$projectDir/schemas")
+		}
+	}
+
 	buildTypes {
 		release {
-			minifyEnabled = false
+			minifyEnabled = true
+			shrinkResources = true
 			proguardFiles(
 					getDefaultProguardFile("proguard-android-optimize.txt"),
 					"proguard-rules.pro"
 			)
-			signingConfig = signingConfigs.debug
 		}
 	}
 }

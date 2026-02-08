@@ -5,7 +5,6 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.room.withTransaction
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.flow.collectLatest
@@ -24,7 +23,6 @@ class EditOrderActivity : AppCompatActivity() {
     private lateinit var etDescription: TextInputEditText
     private lateinit var btnSave: MaterialButton
     private lateinit var btnDelete: MaterialButton
-    private val defaultCommission = 20f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,8 +84,8 @@ class EditOrderActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (amount < 0) {
-                Toast.makeText(this, getString(R.string.amount_negative_error), Toast.LENGTH_SHORT).show()
+            if (amount <= 0) {
+                Toast.makeText(this, getString(R.string.error_amount_zero), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -100,39 +98,25 @@ class EditOrderActivity : AppCompatActivity() {
                     return@launch
                 }
 
-                val ids = db.withTransaction {
-                    val customerId = ensureCustomer(customer)
-                    val driverId = ensureDriver(driver)
-                    val neighborhoodId = ensureNeighborhood(neighborhood)
-                    Triple(customerId, driverId, neighborhoodId)
-                }
-                val customerId = ids.first
-                val driverId = ids.second
-                val neighborhoodId = ids.third
-
-                if (customerId == null || driverId == null || neighborhoodId == null) {
+                val ids = EntityHelper.resolveOrderEntities(db, customer, driver, neighborhood)
+                if (ids == null) {
                     btnSave.isEnabled = true
-                    Toast.makeText(this@EditOrderActivity, getString(R.string.order_update_error), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditOrderActivity, getString(R.string.error_entities_not_found), Toast.LENGTH_LONG).show()
                     return@launch
                 }
-                val updated = existing.copy(
+
+                val (customerId, driverId, neighborhoodId) = ids
+                val order = Order(
+                    id = existing.id,
                     customerId = customerId,
                     driverId = driverId,
                     neighborhoodId = neighborhoodId,
                     amount = amount,
-                    description = description
-                )
-                val order = Order(
-                    id = updated.id,
-                    customerId = updated.customerId,
-                    driverId = updated.driverId,
-                    neighborhoodId = updated.neighborhoodId,
-                    amount = updated.amount,
-                    description = updated.description,
-                    dateTime = updated.dateTime,
-                    settled = updated.settled,
-                    settledAt = updated.settledAt,
-                    status = updated.status
+                    description = description,
+                    dateTime = existing.dateTime,
+                    settled = existing.settled,
+                    settledAt = existing.settledAt,
+                    status = existing.status
                 )
                 val success = db.orderDao().update(order) > 0
                 btnSave.isEnabled = true
@@ -179,35 +163,5 @@ class EditOrderActivity : AppCompatActivity() {
                 finish()
             }
         }
-    }
-
-    private suspend fun ensureCustomer(name: String): Int? {
-        val existing = db.customerDao().getIdByName(name)
-        if (existing != null) return existing
-        db.customerDao().insert(Customer(name = name, nationalId = "", phone = "", address = ""))
-        return db.customerDao().getIdByName(name)
-    }
-
-    private suspend fun ensureDriver(name: String): Int? {
-        val existing = db.driverDao().getIdByName(name)
-        if (existing != null) return existing
-        db.driverDao().insert(
-            Driver(
-                name = name,
-                nationalId = "",
-                plate = "",
-                phone = "",
-                address = "",
-                commission = defaultCommission
-            )
-        )
-        return db.driverDao().getIdByName(name)
-    }
-
-    private suspend fun ensureNeighborhood(name: String): Int? {
-        val existing = db.neighborhoodDao().getIdByName(name)
-        if (existing != null) return existing
-        db.neighborhoodDao().insert(Neighborhood(name = name))
-        return db.neighborhoodDao().getIdByName(name)
     }
 }

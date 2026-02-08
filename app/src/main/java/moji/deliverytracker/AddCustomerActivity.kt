@@ -30,10 +30,7 @@ class AddCustomerActivity : AppCompatActivity() {
             if (customerId != -1) {
                 isEditMode = true
                 supportActionBar?.title = getString(R.string.edit_customer_title)
-                etName.setText(it.getStringExtra("customer_name"))
-                etNationalId.setText(it.getStringExtra("customer_national_id"))
-                etPhone.setText(it.getStringExtra("customer_phone"))
-                etAddress.setText(it.getStringExtra("customer_address"))
+                loadCustomerData(etName, etNationalId, etPhone, etAddress)
             } else {
                 supportActionBar?.title = getString(R.string.add_customer_title)
             }
@@ -62,10 +59,13 @@ class AddCustomerActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            btnSave.isEnabled = false
+
             if (isEditMode) {
                 lifecycleScope.launch {
                     val existing = db.customerDao().getById(customerId)
                     if (existing == null) {
+                        btnSave.isEnabled = true
                         Toast.makeText(this@AddCustomerActivity, getString(R.string.customer_update_error), Toast.LENGTH_SHORT).show()
                         return@launch
                     }
@@ -76,6 +76,7 @@ class AddCustomerActivity : AppCompatActivity() {
                         address = address
                     )
                     val success = db.customerDao().update(updated) > 0
+                    btnSave.isEnabled = true
                     if (success) {
                         Toast.makeText(this@AddCustomerActivity, getString(R.string.customer_updated), Toast.LENGTH_SHORT).show()
                         finish()
@@ -93,6 +94,7 @@ class AddCustomerActivity : AppCompatActivity() {
                             address = address
                         )
                     )
+                    btnSave.isEnabled = true
                     if (result != -1L) {
                         Toast.makeText(this@AddCustomerActivity, getString(R.string.customer_added), Toast.LENGTH_SHORT).show()
                         finish()
@@ -100,6 +102,26 @@ class AddCustomerActivity : AppCompatActivity() {
                         Toast.makeText(this@AddCustomerActivity, getString(R.string.name_duplicate_error), Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+        }
+    }
+
+    private fun loadCustomerData(
+        etName: TextInputEditText,
+        etNationalId: TextInputEditText,
+        etPhone: TextInputEditText,
+        etAddress: TextInputEditText
+    ) {
+        lifecycleScope.launch {
+            val customer = db.customerDao().getById(customerId)
+            if (customer != null) {
+                etName.setText(customer.name)
+                etNationalId.setText(customer.nationalId)
+                etPhone.setText(customer.phone)
+                etAddress.setText(customer.address)
+            } else {
+                Toast.makeText(this@AddCustomerActivity, getString(R.string.customer_update_error), Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
     }

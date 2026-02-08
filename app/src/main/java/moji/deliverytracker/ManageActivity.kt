@@ -9,7 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.facebook.shimmer.ShimmerFrameLayout
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -36,7 +36,7 @@ class ManageActivity : AppCompatActivity() {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, neighborhoods)
         listView.adapter = adapter
 
-        findViewById<MaterialButton>(R.id.btnAddNeighborhood).setOnClickListener {
+        findViewById<ExtendedFloatingActionButton>(R.id.btnAddNeighborhood).setOnClickListener {
             showAddDialog()
         }
 
@@ -67,6 +67,7 @@ class ManageActivity : AppCompatActivity() {
     private fun showAddDialog() {
         val input = TextInputEditText(this)
         input.hint = getString(R.string.neighborhood_name_hint)
+        input.filters = arrayOf(android.text.InputFilter.LengthFilter(50))
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.neighborhood_add_title))
@@ -89,21 +90,33 @@ class ManageActivity : AppCompatActivity() {
     }
 
     private fun confirmDelete(name: String) {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.neighborhood_delete_title))
-            .setMessage(getString(R.string.neighborhood_delete_message, name))
-            .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
-                lifecycleScope.launch {
-                    val success = db.neighborhoodDao().deleteByName(name) > 0
-                    if (success) {
-                        Toast.makeText(this@ManageActivity, getString(R.string.neighborhood_delete_success), Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@ManageActivity, getString(R.string.neighborhood_delete_error), Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val neighborhoodId = db.neighborhoodDao().getIdByName(name)
+            if (neighborhoodId != null && EntityHelper.neighborhoodHasOrders(db, neighborhoodId)) {
+                Toast.makeText(
+                    this@ManageActivity,
+                    getString(R.string.delete_neighborhood_has_orders),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            AlertDialog.Builder(this@ManageActivity)
+                .setTitle(getString(R.string.neighborhood_delete_title))
+                .setMessage(getString(R.string.neighborhood_delete_message, name))
+                .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
+                    lifecycleScope.launch {
+                        val success = db.neighborhoodDao().deleteByName(name) > 0
+                        if (success) {
+                            Toast.makeText(this@ManageActivity, getString(R.string.neighborhood_delete_success), Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this@ManageActivity, getString(R.string.neighborhood_delete_error), Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
-            }
-            .setNegativeButton(getString(R.string.action_no), null)
-            .show()
+                .setNegativeButton(getString(R.string.action_no), null)
+                .show()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

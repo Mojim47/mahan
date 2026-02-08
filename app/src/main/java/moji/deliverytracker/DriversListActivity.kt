@@ -42,6 +42,19 @@ class DriversListActivity : AppCompatActivity() {
         tvEmpty = findViewById(R.id.tvEmptyDrivers)
         shimmer = findViewById(R.id.shimmerDrivers)
 
+        adapter = DriverAdapter(emptyList()) { driver, action ->
+            when (action) {
+                "edit" -> {
+                    val intent = Intent(this, AddDriverActivity::class.java).apply {
+                        putExtra("driver_id", driver.id)
+                    }
+                    startActivity(intent)
+                }
+                "delete" -> confirmDelete(driver)
+            }
+        }
+        recyclerView.adapter = adapter
+
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) { filterDrivers() }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -79,24 +92,7 @@ class DriversListActivity : AppCompatActivity() {
                 it.phone.contains(query)
         }
 
-        adapter = DriverAdapter(filtered) { driver, action ->
-            when (action) {
-                "edit" -> {
-                    val intent = Intent(this, AddDriverActivity::class.java).apply {
-                        putExtra("driver_id", driver.id)
-                        putExtra("driver_name", driver.name)
-                        putExtra("driver_national_id", driver.nationalId)
-                        putExtra("driver_plate", driver.plate)
-                        putExtra("driver_phone", driver.phone)
-                        putExtra("driver_address", driver.address)
-                        putExtra("driver_commission", driver.commission)
-                    }
-                    startActivity(intent)
-                }
-                "delete" -> confirmDelete(driver)
-            }
-        }
-        recyclerView.adapter = adapter
+        adapter.updateList(filtered)
 
         if (filtered.isEmpty()) {
             tvEmpty.visibility = View.VISIBLE
@@ -108,26 +104,39 @@ class DriversListActivity : AppCompatActivity() {
     }
 
     private fun confirmDelete(driver: Driver) {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.delete_driver_title))
-            .setMessage(getString(R.string.delete_driver_message, driver.name))
-            .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
-                lifecycleScope.launch {
-                    val success = db.driverDao().deleteByName(driver.name) > 0
-                    if (success) {
-                        Toast.makeText(this@DriversListActivity, getString(R.string.delete_driver_success), Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@DriversListActivity, getString(R.string.delete_driver_error), Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val hasOrders = EntityHelper.driverHasOrders(db, driver.id)
+            val hasPayments = EntityHelper.driverHasPayments(db, driver.id)
+
+            if (hasOrders || hasPayments) {
+                Toast.makeText(
+                    this@DriversListActivity,
+                    getString(R.string.delete_driver_has_orders),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            AlertDialog.Builder(this@DriversListActivity)
+                .setTitle(getString(R.string.delete_driver_title))
+                .setMessage(getString(R.string.delete_driver_message, driver.name))
+                .setPositiveButton(getString(R.string.action_yes)) { _, _ ->
+                    lifecycleScope.launch {
+                        val success = db.driverDao().deleteById(driver.id) > 0
+                        if (success) {
+                            Toast.makeText(this@DriversListActivity, getString(R.string.delete_driver_success), Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this@DriversListActivity, getString(R.string.delete_driver_error), Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
-            }
-            .setNegativeButton(getString(R.string.action_no), null)
-            .show()
+                .setNegativeButton(getString(R.string.action_no), null)
+                .show()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
     }
-
 }

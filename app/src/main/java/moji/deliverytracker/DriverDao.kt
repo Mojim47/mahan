@@ -18,16 +18,19 @@ interface DriverDao {
     @Query("DELETE FROM drivers WHERE name = :name")
     suspend fun deleteByName(name: String): Int
 
-    @Query("SELECT * FROM drivers ORDER BY name ASC")
+    @Query("DELETE FROM drivers WHERE id = :id")
+    suspend fun deleteById(id: Int): Int
+
+    @Query("SELECT * FROM drivers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     fun getAllFlow(): Flow<List<Driver>>
 
-    @Query("SELECT * FROM drivers ORDER BY name ASC")
+    @Query("SELECT * FROM drivers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     suspend fun getAllOnce(): List<Driver>
 
-    @Query("SELECT name FROM drivers ORDER BY name ASC")
+    @Query("SELECT name FROM drivers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     fun getNamesFlow(): Flow<List<String>>
 
-    @Query("SELECT name FROM drivers ORDER BY name ASC")
+    @Query("SELECT name FROM drivers WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     suspend fun getNamesOnce(): List<String>
 
     @Query("SELECT commission FROM drivers WHERE id = :id LIMIT 1")
@@ -42,6 +45,6 @@ interface DriverDao {
     @Query("SELECT * FROM drivers WHERE id = :id LIMIT 1")
     suspend fun getById(id: Int): Driver?
 
-    @Query("SELECT COUNT(*) FROM drivers")
+    @Query("SELECT COUNT(*) FROM drivers WHERE name != '__UNKNOWN__'")
     fun getCountFlow(): Flow<Int>
 }

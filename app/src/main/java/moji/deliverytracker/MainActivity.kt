@@ -6,7 +6,6 @@ import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.room.withTransaction
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
@@ -26,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnSubmit: MaterialButton
     private lateinit var btnSelectDate: MaterialButton
     private var selectedDate: String? = null
-    private val defaultCommission = 20f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +50,10 @@ class MainActivity : AppCompatActivity() {
         etDescription = findViewById(R.id.etDescription)
         btnSubmit = findViewById(R.id.btnSubmit)
         btnSelectDate = findViewById(R.id.btnSelectDate)
+
+        // Show current date by default
+        val displaySdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        btnSelectDate.text = getString(R.string.date_selected_format, displaySdf.format(Date()))
 
         etDescription.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
@@ -112,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
         val amount = amountText.toIntOrNull()
         if (amount == null && amountText.isNotEmpty()) errors.add(getString(R.string.error_amount_number))
-        if (amount != null && amount < 0) errors.add(getString(R.string.error_amount_negative))
+        if (amount != null && amount <= 0) errors.add(getString(R.string.error_amount_zero))
 
         if (errors.isNotEmpty()) {
             Toast.makeText(this, errors.joinToString("\n"), Toast.LENGTH_LONG).show()
@@ -121,22 +123,15 @@ class MainActivity : AppCompatActivity() {
 
         btnSubmit.isEnabled = false
         lifecycleScope.launch {
-            val ids = db.withTransaction {
-                val customerId = ensureCustomer(customerName)
-                val driverId = ensureDriver(driverName)
-                val neighborhoodId = ensureNeighborhood(neighborhoodName)
-                Triple(customerId, driverId, neighborhoodId)
-            }
-            val customerId = ids.first
-            val driverId = ids.second
-            val neighborhoodId = ids.third
+            val ids = EntityHelper.resolveOrderEntities(db, customerName, driverName, neighborhoodName)
 
-            if (customerId == null || driverId == null || neighborhoodId == null) {
+            if (ids == null) {
                 btnSubmit.isEnabled = true
-                Toast.makeText(this@MainActivity, getString(R.string.order_saved_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, getString(R.string.error_entities_not_found), Toast.LENGTH_LONG).show()
                 return@launch
             }
 
+            val (customerId, driverId, neighborhoodId) = ids
             val now = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
             val order = Order(
                 customerId = customerId,
@@ -151,7 +146,11 @@ class MainActivity : AppCompatActivity() {
             val result = db.orderDao().insert(order)
             btnSubmit.isEnabled = true
             if (result != -1L) {
-                NotificationHelper.showOrderNotification(this@MainActivity, getString(R.string.order_new_title), getString(R.string.order_new_message, customerName))
+                NotificationHelper.showOrderNotification(
+                    this@MainActivity,
+                    getString(R.string.order_new_title),
+                    getString(R.string.order_new_message, customerName)
+                )
                 Toast.makeText(this@MainActivity, getString(R.string.order_saved_success), Toast.LENGTH_SHORT).show()
                 clearForm()
             } else {
@@ -168,36 +167,6 @@ class MainActivity : AppCompatActivity() {
         etDescription.setText("")
         selectedDate = null
         btnSelectDate.text = getString(R.string.date_select_label)
-    }
-
-    private suspend fun ensureCustomer(name: String): Int? {
-        val existing = db.customerDao().getIdByName(name)
-        if (existing != null) return existing
-        db.customerDao().insert(Customer(name = name, nationalId = "", phone = "", address = ""))
-        return db.customerDao().getIdByName(name)
-    }
-
-    private suspend fun ensureDriver(name: String): Int? {
-        val existing = db.driverDao().getIdByName(name)
-        if (existing != null) return existing
-        db.driverDao().insert(
-            Driver(
-                name = name,
-                nationalId = "",
-                plate = "",
-                phone = "",
-                address = "",
-                commission = defaultCommission
-            )
-        )
-        return db.driverDao().getIdByName(name)
-    }
-
-    private suspend fun ensureNeighborhood(name: String): Int? {
-        val existing = db.neighborhoodDao().getIdByName(name)
-        if (existing != null) return existing
-        db.neighborhoodDao().insert(Neighborhood(name = name))
-        return db.neighborhoodDao().getIdByName(name)
     }
 
     override fun onSupportNavigateUp(): Boolean {

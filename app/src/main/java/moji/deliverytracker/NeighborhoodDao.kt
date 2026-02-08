@@ -14,15 +14,18 @@ interface NeighborhoodDao {
     @Query("DELETE FROM neighborhoods WHERE name = :name")
     suspend fun deleteByName(name: String): Int
 
-    @Query("SELECT name FROM neighborhoods ORDER BY name ASC")
+    @Query("SELECT name FROM neighborhoods WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     fun getNamesFlow(): Flow<List<String>>
 
-    @Query("SELECT name FROM neighborhoods ORDER BY name ASC")
+    @Query("SELECT name FROM neighborhoods WHERE name != '__UNKNOWN__' ORDER BY name ASC")
     suspend fun getNamesOnce(): List<String>
 
     @Query("SELECT id FROM neighborhoods WHERE name = :name LIMIT 1")
     suspend fun getIdByName(name: String): Int?
 
-    @Query("SELECT COUNT(*) FROM neighborhoods")
+    @Query("SELECT COUNT(*) FROM neighborhoods WHERE name != '__UNKNOWN__'")
     fun getCountFlow(): Flow<Int>
+
+    @Query("SELECT id FROM neighborhoods WHERE name = :name LIMIT 1")
+    suspend fun getIdByNameDirect(name: String): Int?
 }

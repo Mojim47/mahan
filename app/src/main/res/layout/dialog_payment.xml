@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -18,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/payment_amount_hint"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textSize="18sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -28,26 +29,29 @@
         android:text="@string/payment_method"
         android:textSize="14sp"
         android:textStyle="bold"
+        android:textColor="@color/md_theme_on_surface"
         android:layout_marginBottom="8dp" />
 
     <RadioGroup
         android:id="@+id/rgPaymentMethod"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/rbCash"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/payment_cash"
             android:checked="true"
             android:buttonTint="@color/md_theme_primary" />
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/rbCard"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/payment_card"
             android:buttonTint="@color/md_theme_primary" />
 
