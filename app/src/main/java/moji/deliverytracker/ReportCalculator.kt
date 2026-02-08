@@ -34,7 +34,7 @@ object ReportCalculator {
             val orderTime = orderCal.timeInMillis
 
             when (period) {
-                ReportPeriod.TODAY -> dayFormat.format(orderCal.time) == todayKey && orderTime <= nowTime
+                ReportPeriod.TODAY -> dayFormat().format(orderCal.time) == todayKey && orderTime <= nowTime
                 ReportPeriod.WEEK -> {
                     val weekAgo = Calendar.getInstance().apply { time = now.time; add(Calendar.DAY_OF_YEAR, -7) }
                     orderTime in weekAgo.timeInMillis..nowTime
